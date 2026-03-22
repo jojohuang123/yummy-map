@@ -1,0 +1,56 @@
+
+.summary-card {
+  display: flex;
+  justify-content: space-around;
+  padding: 24rpx 0;
+}
+.summary-item { text-align: center; }
+.summary-val { font-size: 36rpx; font-weight: bold; color: #07C160; }
+.summary-label { font-size: 24rpx; color: #666; }
+.item-card { opacity: 1; }
+.item-card-disabled { opacity: 0.5; }
+.item-card-pending { border: 2rpx dashed #ccc; }
+.card-header { display: flex; align-items: flex-start; gap: 16rpx; }
+.item-name { font-size: 32rpx; font-weight: bold; margin-bottom: 8rpx; }
+.detail-row { margin-top: 16rpx; margin-left: 60rpx; }
+.detail-address { margin-top: 8rpx; margin-left: 60rpx; font-size: 24rpx; color: #999; }
+.footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; padding: 24rpx; border-top: 1rpx solid #eee; display: flex; align-items: center; justify-content: space-between; z-index: 99; }
+.footer-text { font-size: 28rpx; }
+.highlight-count { color: #07C160; font-weight: bold; }
+.footer-button { width: 40%; margin: 0; }
+.checkbox { font-size: 32rpx; border: 2rpx solid #ddd; width: 40rpx; height: 40rpx; display: inline-flex; align-items: center; justify-content: center; }
+.checkbox-checked { background: #07C160; border-color: #07C160; color: white; }
+.checkbox-disabled { background: #eee; border-color: #ccc; }
+.action-chip { margin-top: 16rpx; }
+.chip-row { margin-bottom: 16rpx; display: flex; gap: 16rpx; }
+.chip { border-radius: 8rpx; padding: 8rpx 24rpx; font-size: 26rpx; background: #f2f2f2; }
+
+/* 评分类样式 */
+.rating-gold {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #fff;
+  font-size: 22rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  font-weight: bold;
+}
+.rating-green {
+  background: linear-gradient(135deg, #07C160, #06AD56);
+  color: #fff;
+  font-size: 22rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+}
+.rating-gray {
+  background: #e0e0e0;
+  color: #999;
+  font-size: 22rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+}
+.rating-badge {
+  font-size: 22rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  white-space: nowrap;
+}

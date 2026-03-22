@@ -1,0 +1,45 @@
+{
+  "description": "美食地图助手微信小程序",
+  "miniprogramRoot": "miniprogram/",
+  "projectname": "yummy-map",
+  "appid": "wxa8cce492385449d6",
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": false,
+    "coverView": true,
+    "nodeModules": false,
+    "showShadowRootInWxmlPanel": true,
+    "packNpmManually": false,
+    "compileHotReLoad": true,
+    "compileWorklet": false,
+    "uglifyFileName": false,
+    "uploadWithSourceMap": true,
+    "packNpmRelationList": [],
+    "minifyWXSS": true,
+    "minifyWXML": true,
+    "localPlugins": false,
+    "disableUseStrict": false,
+    "useCompilerPlugins": false,
+    "condition": false,
+    "swc": false,
+    "disableSWC": true,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    }
+  },
+  "compileType": "miniprogram",
+  "libVersion": "3.14.3",
+  "simulatorType": "wechat",
+  "condition": {},
+  "simulatorPluginLibVersion": {},
+  "packOptions": {
+    "ignore": [],
+    "include": []
+  },
+  "editorSetting": {}
+}

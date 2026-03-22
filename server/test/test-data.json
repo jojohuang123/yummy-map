@@ -1,0 +1,188 @@
+{
+  "testCases": [
+    {
+      "id": "TC001",
+      "name": "单店文本导入",
+      "description": "导入一家餐厅",
+      "input": {
+        "cityName": "上海",
+        "cityAdcode": "310000",
+        "text": "老吉士酒家"
+      },
+      "expected": {
+        "itemsCount": 1,
+        "matchedCount": 1,
+        "status": "preview_ready"
+      }
+    },
+    {
+      "id": "TC002",
+      "name": "多店文本导入（换行分隔）",
+      "description": "一次性导入多家餐厅",
+      "input": {
+        "cityName": "上海",
+        "cityAdcode": "310000",
+        "text": "老吉士酒家\n阿娘面馆\n兰心餐厅"
+      },
+      "expected": {
+        "itemsCount": 3,
+        "matchedCount": 3,
+        "status": "preview_ready"
+      }
+    },
+    {
+      "id": "TC003",
+      "name": "多店文本导入（逗号分隔）",
+      "description": "使用逗号分隔多家餐厅",
+      "input": {
+        "cityName": "上海",
+        "cityAdcode": "310000",
+        "text": "老吉士酒家，阿娘面馆，兰心餐厅"
+      },
+      "expected": {
+        "itemsCount": 3,
+        "matchedCount": 3,
+        "status": "preview_ready"
+      }
+    },
+    {
+      "id": "TC004",
+      "name": "带序号导入",
+      "description": "文本中包含数字序号",
+      "input": {
+        "cityName": "上海",
+        "cityAdcode": "310000",
+        "text": "1. 老吉士酒家\n2. 阿娘面馆\n3. 兰心餐厅"
+      },
+      "expected": {
+        "itemsCount": 3,
+        "matchedCount": 3,
+        "status": "preview_ready"
+      }
+    },
+    {
+      "id": "TC005",
+      "name": "带噪声词导入",
+      "description": "文本中包含推荐、评分等噪声词",
+      "input": {
+        "cityName": "上海",
+        "cityAdcode": "310000",
+        "text": "老吉士酒家\n人均120\n收藏打卡\n阿娘面馆\n评分4.4\n兰心餐厅"
+      },
+      "expected": {
+        "itemsCount": 3,
+        "matchedCount": 3,
+        "status": "preview_ready"
+      }
+    },
+    {
+      "id": "TC006",
+      "name": "带括号导入",
+      "description": "店名包含括号及括号内地址",
+      "input": {
+        "cityName": "上海",
+        "cityAdcode": "310000",
+        "text": "老吉士酒家(天平路店)\n阿娘面馆（思南路店）"
+      },
+      "expected": {
+        "itemsCount": 2,
+        "matchedCount": 2,
+        "status": "preview_ready"
+      }
+    },
+    {
+      "id": "TC007",
+      "name": "重复导入检测",
+      "description": "重复导入同一餐厅应检测为重复",
+      "input": {
+        "cityName": "上海",
+        "cityAdcode": "310000",
+        "text": "老吉士酒家"
+      },
+      "expected": {
+        "duplicateCount": 1
+      }
+    },
+    {
+      "id": "TC008",
+      "name": "空输入处理",
+      "description": "空文本应返回错误",
+      "input": {
+        "cityName": "上海",
+        "cityAdcode": "310000",
+        "text": ""
+      },
+      "expected": {
+        "status": 400,
+        "errorCode": "IMPORT_INVALID_INPUT"
+      }
+    },
+    {
+      "id": "TC009",
+      "name": "无法识别文本",
+      "description": "无法识别为店名的文本",
+      "input": {
+        "cityName": "上海",
+        "cityAdcode": "310000",
+        "text": "xyzabc123###"
+      },
+      "expected": {
+        "status": 400,
+        "errorCode": "IMPORT_NO_CANDIDATES"
+      }
+    },
+    {
+      "id": "TC010",
+      "name": "城市自动识别",
+      "description": "不指定城市时自动识别",
+      "input": {
+        "cityName": "自动识别",
+        "cityAdcode": "",
+        "text": "老吉士酒家"
+      },
+      "expected": {
+        "itemsCount": 1,
+        "matchedCount": 1,
+        "status": "preview_ready"
+      }
+    }
+  ],
+  "mockPlaces": [
+    {
+      "keyword": "老吉士酒家",
+      "poiId": "B00123",
+      "poiName": "老吉士酒家(天平路店)",
+      "rating": 4.6,
+      "cost": 168,
+      "address": "天平路41号",
+      "businessArea": "徐家汇",
+      "adcode": "310104",
+      "topTags": ["红烧肉", "葱烤大排", "蟹粉豆腐"],
+      "location": { "latitude": 31.206, "longitude": 121.437 }
+    },
+    {
+      "keyword": "阿娘面馆",
+      "poiId": "B00987",
+      "poiName": "阿娘面馆",
+      "rating": 4.4,
+      "cost": 52,
+      "address": "思南路36号",
+      "businessArea": "淮海中路",
+      "adcode": "310101",
+      "topTags": ["黄鱼面", "蟹粉面", "雪菜黄鱼"],
+      "location": { "latitude": 31.213, "longitude": 121.467 }
+    },
+    {
+      "keyword": "兰心餐厅",
+      "poiId": "B00666",
+      "poiName": "兰心餐厅",
+      "rating": 4.5,
+      "cost": 120,
+      "address": "进贤路130号",
+      "businessArea": "淮海中路",
+      "adcode": "310101",
+      "topTags": ["葱油鸡", "咸肉菜饭", "蚝油牛肉"],
+      "location": { "latitude": 31.221, "longitude": 121.459 }
+    }
+  ]
+}

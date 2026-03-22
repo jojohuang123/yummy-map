@@ -1,0 +1,19 @@
+{
+  "name": "yummy-map-server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --env-file=.env src/index.js",
+    "start": "node --env-file=.env src/index.js",
+    "check": "node --check src/index.js",
+    "test": "node --env-file=.env test/server.test.js",
+    "test:api": "node --env-file=.env test/api.test.js",
+    "test:e2e": "node --env-file=.env test/e2e.test.js",
+    "test:all": "node --env-file=.env test/server.test.js && node --env-file=.env test/api.test.js"
+  },
+  "dependencies": {
+    "sql.js": "^1.14.1",
+    "tencentcloud-sdk-nodejs-ocr": "^4.1.199"
+  }
+}

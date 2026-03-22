@@ -1,0 +1,65 @@
+<view class="page-shell">
+  <view class="page-title">一键导入你种草的店</view>
+  <view class="page-subtitle">粘贴店名文本，或上传截图让我帮你识别。导入前会先给你看评分、人均、地址和匹配状态。</view>
+
+  <view class="section-card">
+    <view class="section-title">目标省份</view>
+    <picker range="{{cityOptions}}" range-key="name" value="{{cityIndex}}" bindchange="handleCityChange">
+      <view class="picker-value">{{cityOptions[cityIndex].name}} ▼</view>
+    </picker>
+    <view class="muted-text">默认自动识别；如果结果不准，再手动切换省份重试。</view>
+  </view>
+
+  <view class="section-card dev-card" wx:if="{{apiMode === '本机开发者工具调试'}}">
+    <view class="section-title">联调提示</view>
+    <view class="muted-text">当前模式：{{apiMode}}</view>
+    <view class="muted-text">当前接口：{{apiBaseUrl}}</view>
+    <view class="muted-text">开发者工具可直接用 127.0.0.1；真机调试时请改成电脑局域网 IP。</view>
+  </view>
+
+  <view class="section-card">
+    <view class="section-title">粘贴店名文本</view>
+    <textarea
+      class="text-area"
+      placeholder="可粘贴视频简介、评论区或笔记中的多家店名"
+      value="{{textValue}}"
+      bindinput="handleTextInput"
+      maxlength="-1"
+    />
+  </view>
+
+  <view class="section-card">
+    <view class="section-title">上传截图识别（最多 3 张）</view>
+    <view class="image-grid">
+      <block wx:for="{{images}}" wx:key="tempFilePath">
+        <view class="image-slot filled-slot">
+          <image class="preview-image" src="{{item.tempFilePath}}" mode="aspectFill" />
+          <button class="remove-button" data-index="{{index}}" bindtap="handleRemoveImage">移除</button>
+        </view>
+      </block>
+      <block wx:if="{{images.length < 3}}">
+        <view class="image-slot upload-slot" bindtap="handleChooseImage">
+          <view class="upload-text">上传图片</view>
+        </view>
+      </block>
+    </view>
+    <view class="muted-text">上传后会显示识别中状态，超过 15 秒会提示重试。</view>
+  </view>
+
+  <block wx:if="{{stageText}}">
+    <view class="section-card status-card">
+      <view class="section-title">处理中</view>
+      <view class="muted-text">{{stageText}}</view>
+    </view>
+  </block>
+
+  <block wx:if="{{errorText}}">
+    <view class="section-card error-card">
+      <view class="section-title">提示</view>
+      <view class="error-text">{{errorText}}</view>
+    </view>
+  </block>
+
+  <button class="primary-button" loading="{{isSubmitting}}" disabled="{{isSubmitting}}" bindtap="handleSubmit">开始识别</button>
+  <button class="secondary-button import-map-button" bindtap="handleGoMap">查看收藏地图</button>
+</view>

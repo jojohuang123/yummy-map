@@ -1,0 +1,33 @@
+{
+  "pages": [
+    "pages/import/index",
+    "pages/preview/index",
+    "pages/map/index",
+    "pages/list/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "美食地图助手",
+    "navigationBarBackgroundColor": "#FFF9F1",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#F6F1E8",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "color": "#6D655F",
+    "selectedColor": "#1F1A17",
+    "backgroundColor": "#FFF9F1",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/import/index",
+        "text": "导入"
+      },
+      {
+        "pagePath": "pages/map/index",
+        "text": "地图"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

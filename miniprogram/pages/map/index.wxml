@@ -1,0 +1,144 @@
+<view class="page-shell map-shell">
+
+  <!-- 顶部：城市筛选 + 搜索框 -->
+  <view class="map-top-bar">
+    <picker
+      class="city-picker"
+      range="{{cityList}}"
+      range-key="name"
+      value="{{cityIndex}}"
+      bindchange="handleCityChange"
+    >
+      <view class="city-pill">
+        <text>{{cityList[cityIndex].name}}</text>
+        <text class="picker-arrow">▾</text>
+      </view>
+    </picker>
+
+    <view class="search-bar">
+      <text class="search-icon">🔍</text>
+      <input
+        class="search-input"
+        placeholder="想吃什么？搜索店名或菜系"
+        placeholder-style="color:#B8A696;"
+        value="{{searchKeyword}}"
+        bindinput="handleSearchInput"
+        confirm-type="search"
+      />
+      <view
+        class="search-clear"
+        wx:if="{{searchKeyword}}"
+        bindtap="handleSearchClear"
+      >✕</view>
+    </view>
+  </view>
+
+  <!-- 统计栏 -->
+  <view class="map-stats">
+    <text class="stats-text">
+      📍 共找到 <text class="highlight-count-small">{{filteredFavorites.length}}</text> 家宝藏店
+      <text wx:if="{{searchKeyword || cityList[cityIndex].adcode}}">（筛选结果）</text>
+    </text>
+    <view class="map-link" bindtap="handleGoList">管理清单 📝</view>
+  </view>
+
+  <block wx:if="{{favorites.length}}">
+    <!-- 地图（占据除面板外的剩余空间） -->
+    <map
+      class="map-panel"
+      latitude="{{latitude}}"
+      longitude="{{longitude}}"
+      scale="{{scale}}"
+      markers="{{markers}}"
+      include-points="{{includePoints}}"
+      bindmarkertap="handleMarkerTap"
+      bindcallouttap="handleMarkerTap"
+      show-location="true"
+    />
+
+    <!-- 可拖动底部面板 -->
+    <view
+      class="bottom-panel"
+      style="height: {{panelHeight}}rpx;"
+      bindtouchstart="onPanelTouchStart"
+      bindtouchmove="onPanelTouchMove"
+      bindtouchend="onPanelTouchEnd"
+    >
+      <!-- 拖动指示器 -->
+      <view class="drag-handle" bindtap="togglePanel">
+        <view class="drag-indicator"></view>
+      </view>
+
+      <!-- 当前选中的商家卡片（始终显示） -->
+      <view class="current-store-section" wx:if="{{selectedFavorite}}">
+        <view class="current-store-card" bindtap="handleNavigate">
+          <view class="card-header">
+            <view class="card-title-group">
+              <view class="store-name">{{selectedFavorite.name}}</view>
+              <view class="rating-badge {{selectedFavorite.ratingClass}}" wx:if="{{selectedFavorite.ratingLabel !== '-'}}">⭐ {{selectedFavorite.rating}}</view>
+            </view>
+          </view>
+          <view class="card-body">
+            <view class="info-row">
+              <text class="tag-label">{{selectedFavorite.topTagsLabel}}</text>
+              <text class="cost-label">人均 {{selectedFavorite.costLabel}}</text>
+            </view>
+            <view class="address-row">📍 {{selectedFavorite.address}}</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 附近商家列表（展开时显示） -->
+      <view class="nearby-section" wx:if="{{panelExpanded && nearbyStores.length > 0}}">
+        <view class="nearby-header">
+          <view class="nearby-title">附近商家</view>
+          <view class="nearby-hint">{{selectedFavorite.name}} 附近还有 {{nearbyStores.length}} 家</view>
+        </view>
+        <scroll-view
+          class="nearby-list"
+          scroll-y
+          enhanced
+          show-scrollbar="false"
+        >
+          <view
+            class="nearby-item"
+            wx:for="{{nearbyStores}}"
+            wx:key="id"
+            bindtap="onSelectNearbyStore"
+            data-id="{{item.id}}"
+          >
+            <view class="nearby-info">
+              <view class="nearby-name">{{item.name}}</view>
+              <view class="nearby-meta">
+                <text class="nearby-rating">⭐ {{item.rating || '-'}}</text>
+                <text class="nearby-distance">{{item.distanceText}}</text>
+              </view>
+            </view>
+            <view class="nearby-tags">{{item.topTagsLabel}}</view>
+          </view>
+        </scroll-view>
+      </view>
+
+      <!-- 空状态（展开时但无附近商家） -->
+      <view class="nearby-empty" wx:if="{{panelExpanded && nearbyStores.length === 0 && selectedFavorite}}">
+        <text class="empty-text">这片区域没有其他收藏商家了</text>
+      </view>
+
+      <!-- 收起提示 -->
+      <view class="pull-up-hint" wx:if="{{!panelExpanded}}">
+        <text class="hint-text">↑ 上拉查看附近商家</text>
+      </view>
+    </view>
+  </block>
+
+  <block wx:else>
+    <!-- 空状态 -->
+    <view class="empty-state">
+      <view class="empty-icon">🗺️</view>
+      <view class="empty-title">地图空空如也</view>
+      <view class="empty-desc">先把美味收集起来，地图上才会有你的足迹哦。</view>
+      <button class="primary-button" bindtap="handleGoImport">去导入美食截图</button>
+    </view>
+  </block>
+
+</view>

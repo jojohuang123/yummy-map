@@ -1,0 +1,68 @@
+<view class="page-shell">
+  <view class="list-header">
+    <view>
+      <view class="page-title">美食雷达</view>
+      <view class="page-subtitle">整理和探索你的私藏美食清单。</view>
+    </view>
+    <view class="edit-toggle" bindtap="handleToggleEdit" wx:if="{{favorites.length}}">
+      {{isEditMode ? '完成' : '管理'}}
+    </view>
+  </view>
+
+  <block wx:if="{{isEditMode && favorites.length}}">
+    <view class="batch-bar">
+      <view class="batch-left" bindtap="handleSelectAll">
+        <view class="checkbox {{allSelected ? 'checkbox-checked' : ''}}">
+          <text wx:if="{{allSelected}}">✓</text>
+        </view>
+        <text class="batch-text">{{allSelected ? '取消全选' : '全选'}}</text>
+      </view>
+      <button class="danger-button batch-delete-btn" disabled="{{!selectedIds.length}}" bindtap="handleBatchDelete">
+        删除 {{selectedIds.length ? '(' + selectedIds.length + ')' : ''}}
+      </button>
+    </view>
+  </block>
+
+  <block wx:if="{{favorites.length}}">
+    <block wx:for="{{favorites}}" wx:key="id">
+      <view class="section-card list-card {{isEditMode ? 'is-edit-mode' : ''}}">
+        <view class="card-row">
+          <block wx:if="{{isEditMode}}">
+            <view class="checkbox list-checkbox {{selectedIds.indexOf(item.id) >= 0 ? 'checkbox-checked' : ''}}" data-id="{{item.id}}" bindtap="handleToggleItem">
+              <text wx:if="{{selectedIds.indexOf(item.id) >= 0}}">✓</text>
+            </view>
+          </block>
+          
+          <view class="card-content">
+            <view class="card-title-group">
+              <view class="item-name">{{item.name}}</view>
+              
+            </view>
+
+            <view class="detail-row list-detail-row">
+              <text class="tag-label">{{item.topTagsLabel}}</text>
+              <text class="cost-label">人均 {{item.costLabel}}</text>
+            </view>
+            <view class="detail-address list-address">📍 {{item.address}}</view>
+            <view class="import-time" wx:if="{{item.createdAt}}">🕐 {{item.createdAtLabel}}</view>
+
+            <block wx:if="{{!isEditMode}}">
+              <view class="button-row list-button-row">
+                <button class="secondary-button card-button" data-id="{{item.id}}" bindtap="handleLocate">地图定位</button>
+                <button class="secondary-button card-button btn-nav" data-id="{{item.id}}" bindtap="handleNavigate">导航到这</button>
+                <button class="secondary-button card-button btn-del" data-id="{{item.id}}" bindtap="handleRemove">删除</button>
+              </view>
+            </block>
+          </view>
+        </view>
+      </view>
+    </block>
+  </block>
+
+  <block wx:else>
+    <view class="section-card empty-card">
+      <view class="empty-title">雷达空空如也 📡</view>
+      <view class="muted-text">快去地图页或者截图导入一些心动小店吧！</view>
+    </view>
+  </block>
+</view>
