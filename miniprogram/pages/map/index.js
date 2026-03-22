@@ -22,6 +22,66 @@ Page({
     nearbyStores: []
   },
 
+  // 美食类型标记配置
+  _markerConfig: {
+    hotpot: {
+      name: '火锅',
+      bgColor: '#FF8A80',
+      borderColor: '#D32F2F',
+      icon: '🍲'
+    },
+    bbq: {
+      name: '烧烤',
+      bgColor: '#FFAB40',
+      borderColor: '#E65100',
+      icon: '🥩'
+    },
+    noodles: {
+      name: '面馆',
+      bgColor: '#FFD4B8',
+      borderColor: '#E8945A',
+      icon: '🍜'
+    },
+    dessert: {
+      name: '甜品',
+      bgColor: '#F8BBD9',
+      borderColor: '#E91E8A',
+      icon: '🍰'
+    },
+    seafood: {
+      name: '海鲜',
+      bgColor: '#B3E5FC',
+      borderColor: '#0288D1',
+      icon: '🐟'
+    },
+    dimsum: {
+      name: '本帮菜',
+      bgColor: '#FFF9C4',
+      borderColor: '#F9A825',
+      icon: '🥟'
+    },
+    restaurant: {
+      name: '餐厅',
+      bgColor: '#E8D5C4',
+      borderColor: '#A1887F',
+      icon: '🍴'
+    }
+  },
+
+  // 根据 tags 判断商家类型
+  _getMarkerType(favorite) {
+    const tags = (favorite.topTags || []).join('');
+    const tagsLower = tags.toLowerCase();
+
+    if (tags.includes('火锅')) return 'hotpot';
+    if (tags.includes('烧烤') || tags.includes('烤肉')) return 'bbq';
+    if (tags.includes('面') || tags.includes('拉面') || tags.includes('粉')) return 'noodles';
+    if (tags.includes('甜品') || tags.includes('蛋糕') || tags.includes('咖啡') || tags.includes('奶茶') || tags.includes('烘焙')) return 'dessert';
+    if (tags.includes('海鲜') || tags.includes('鱼') || tags.includes('虾')) return 'seafood';
+    if (tags.includes('小笼') || tags.includes('本帮') || tags.includes('江浙') || tags.includes('沪菜')) return 'dimsum';
+    return 'restaurant';
+  },
+
   // 城市名前缀映射
   _cityNameMap: {
     "11": "北京", "12": "天津", "31": "上海", "32": "江苏",
@@ -108,7 +168,8 @@ Page({
         topTagsLabel: item.topTagsLabel || (item.topTags || []).join(" / ") || "未分类",
         ratingLabel: item.rating || "-",
         costLabel: item.cost ? `¥${item.cost}` : "-",
-        ratingClass: numRating >= 4.5 ? 'rating-gold' : numRating >= 4 ? 'rating-green' : 'rating-gray'
+        ratingClass: numRating >= 4.5 ? 'rating-gold' : numRating >= 4 ? 'rating-green' : 'rating-gray',
+        markerType: this._getMarkerType(item)
       });
     });
 
@@ -172,24 +233,34 @@ Page({
     // 计算附近商家
     const nearbyStores = this._calcNearbyStores(selectedFavorite, filtered);
 
+    // 生成标记
     const markers = filtered.map((item, index) => {
       const isSelected = selectedFavorite && selectedFavorite.id === item.id;
+      const markerType = item.markerType || this._getMarkerType(item);
+      const config = this._markerConfig[markerType];
+
+      // 选中状态标记配置
+      const markerWidth = isSelected ? 32 : 28;
+      const markerHeight = isSelected ? 40 : 36;
+
       return {
-        id: index, // 使用数字索引作为 marker ID，确保类型一致
-        storeId: item.id, // 保留原始 store ID
+        id: index,
+        storeId: item.id,
         latitude: item.latitude,
         longitude: item.longitude,
-        width: 24, height: 32, iconPath: "/assets/marker.png",
+        width: markerWidth,
+        height: markerHeight,
+        // 使用默认标记图，callout 显示商家类型和名称
         callout: {
-          content: item.name,
-          display: "ALWAYS",
-          padding: isSelected ? 8 : 4,
-          borderRadius: 24,
-          bgColor: isSelected ? "#07C160" : "#ffffff",
-          color: isSelected ? "#ffffff" : "#333333",
-          borderWidth: 1,
-          borderColor: "#dddddd",
-          fontSize: 14,
+          content: `${config.icon} ${item.name}`,
+          display: isSelected ? "ALWAYS" : "BYCLICKING",
+          padding: isSelected ? 12 : 8,
+          borderRadius: isSelected ? 28 : 24,
+          bgColor: isSelected ? "#FF7B6B" : "#FFFCF9",
+          color: isSelected ? "#FFFFFF" : "#4A3728",
+          borderWidth: isSelected ? 2 : 1,
+          borderColor: isSelected ? "#E86B5B" : "#FFE4DC",
+          fontSize: isSelected ? 14 : 13,
           textAlign: "center"
         }
       };
@@ -248,7 +319,6 @@ Page({
 
   // ========== Marker 点击处理 ==========
   handleMarkerTap(e) {
-    // 从事件中获取 markerId（是数字索引）
     const markerId = e.detail?.markerId ?? e.markerId;
 
     if (markerId === undefined || markerId === null) {
@@ -256,7 +326,6 @@ Page({
       return;
     }
 
-    // 使用索引获取对应的商家
     const index = Number(markerId);
     const item = this.data.filteredFavorites[index];
 
@@ -278,12 +347,11 @@ Page({
     if (!this.isPanelDragging) return;
 
     const currentY = e.touches[0].clientY;
-    const deltaY = this.panelStartY - currentY; // 上拉为正，下拉为负
-    const deltaHeight = deltaY * 1.5; // 转换 rpx
+    const deltaY = this.panelStartY - currentY;
+    const deltaHeight = deltaY * 1.5;
 
     let newHeight = this.panelStartHeight + deltaHeight;
-    // 限制在最小和最大高度之间
-    const minHeight = this.data.panelHeight; // 最小高度（收起状态）
+    const minHeight = this.data.panelHeight;
     newHeight = Math.max(minHeight, Math.min(this.data.panelExpandedHeight, newHeight));
 
     this.setData({ panelHeight: newHeight });
@@ -293,8 +361,7 @@ Page({
     if (!this.isPanelDragging) return;
     this.isPanelDragging = false;
 
-    // 如果拖动后高度超过中点，则展开；否则收起
-    const midPoint = 360; // (220 + 500) / 2
+    const midPoint = 360;
     const shouldExpand = this.data.panelHeight > midPoint;
 
     this.setData({
@@ -314,10 +381,8 @@ Page({
   // ========== 选择附近商家 ==========
   onSelectNearbyStore(e) {
     const storeId = e.currentTarget.dataset.id;
-    // 使用原始 ID 查找商家
     const item = this.data.filteredFavorites.find((f) => f.id === storeId);
     if (item) {
-      // 更新选中的商家，保持展开状态
       this.applyFilter(item);
     }
   },
