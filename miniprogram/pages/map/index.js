@@ -157,8 +157,8 @@ Page({
         latitude: item.latitude,
         longitude: item.longitude,
         iconPath: isSelected ? markerConfig.activeIconPath : markerConfig.iconPath,
-        width: isSelected ? 34 : 28,
-        height: isSelected ? 46 : 38,
+        width: isSelected ? 42 : 34,
+        height: isSelected ? 58 : 46,
         anchor: {
           x: 0.5,
           y: 1
@@ -166,12 +166,12 @@ Page({
         callout: {
           content: item.name,
           display: isSelected ? "ALWAYS" : "BYCLICKING",
-          padding: isSelected ? 10 : 8,
+          padding: isSelected ? 11 : 8,
           borderRadius: 18,
-          bgColor: isSelected ? "#F3E7DE" : "#FFFDF9",
+          bgColor: isSelected ? "#FFF8F0" : "#FFFDF9",
           color: "#342A24",
           borderWidth: 1,
-          borderColor: isSelected ? "#D97C62" : "#E6D9CB",
+          borderColor: isSelected ? "#E58A6B" : "#D8C8B8",
           fontSize: 13,
           textAlign: "center"
         }
@@ -184,11 +184,22 @@ Page({
     const response = await api.getFavoritesMap().catch(() => ({ items: [] }));
     const favorites = (response.items || []).map((item) => {
       const numRating = Number(item.rating) || 0;
+      let ratingClass = "rating-low";
+
+      if (numRating >= 4.7) {
+        ratingClass = "rating-top";
+      } else if (numRating >= 4.4) {
+        ratingClass = "rating-high";
+      } else if (numRating >= 4.0) {
+        ratingClass = "rating-mid";
+      }
+
       return Object.assign({}, item, {
         topTagsLabel: item.topTagsLabel || (item.topTags || []).join(" / ") || "未分类",
         ratingLabel: item.rating || "-",
+        ratingBadgeText: item.rating ? `★ ${item.rating}` : "-",
         costLabel: item.cost ? `¥${item.cost}` : "-",
-        ratingClass: numRating >= 4.5 ? "rating-gold" : numRating >= 4 ? "rating-green" : "rating-gray",
+        ratingClass,
         markerType: this._getMarkerType(item)
       });
     });

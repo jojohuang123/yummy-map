@@ -241,6 +241,26 @@ page {
   color: var(--text-secondary);
 }
 
+.rating-top {
+  background: linear-gradient(180deg, #F2C35A 0%, #DCA240 100%);
+  color: #FFF9EE;
+}
+
+.rating-high {
+  background: linear-gradient(180deg, #F19B53 0%, #DF7E42 100%);
+  color: #FFF9F0;
+}
+
+.rating-mid {
+  background: rgba(217, 124, 98, 0.16);
+  color: #A65C47;
+}
+
+.rating-low {
+  background: var(--bg-soft);
+  color: var(--text-secondary);
+}
+
 /* ===== 卡片头部组 ===== */
 .card-title-group {
   display: flex;

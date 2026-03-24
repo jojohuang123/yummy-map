@@ -63,7 +63,7 @@
           <view class="card-header">
             <view class="card-title-group">
               <view class="store-name">{{selectedFavorite.name}}</view>
-              <view class="rating-badge {{selectedFavorite.ratingClass}}" wx:if="{{selectedFavorite.ratingLabel !== '-'}}">{{selectedFavorite.rating}}</view>
+              <view class="rating-badge score-badge {{selectedFavorite.ratingClass}}" wx:if="{{selectedFavorite.ratingLabel !== '-'}}">{{selectedFavorite.ratingBadgeText}}</view>
             </view>
           </view>
 
@@ -104,7 +104,7 @@
             <view class="nearby-info">
               <view class="nearby-name">{{item.name}}</view>
               <view class="nearby-meta">
-                <text class="nearby-rating" wx:if="{{item.rating}}">{{item.rating}}</text>
+                <text class="nearby-rating rating-badge {{item.ratingClass}}" wx:if="{{item.rating}}">{{item.ratingBadgeText}}</text>
                 <text class="nearby-distance">{{item.distanceText}}</text>
               </view>
             </view>

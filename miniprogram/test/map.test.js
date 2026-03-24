@@ -337,37 +337,34 @@ test("城市列表构建 - 按城市名排序", () => {
 });
 
 // ========== 单元测试：评分分类 ==========
-test("评分分类 - 金色", () => {
-  const getRatingClass = (rating) => {
-    const numRating = Number(rating) || 0;
-    return numRating >= 4.5 ? 'rating-gold' : numRating >= 4 ? 'rating-green' : 'rating-gray';
-  };
+const getRatingClass = (rating) => {
+  const numRating = Number(rating) || 0;
+  if (numRating >= 4.7) return 'rating-top';
+  if (numRating >= 4.4) return 'rating-high';
+  if (numRating >= 4.0) return 'rating-mid';
+  return 'rating-low';
+};
 
-  assert(getRatingClass(4.6) === 'rating-gold', `4.6分应是金色，实际: ${getRatingClass(4.6)}`);
-  assert(getRatingClass(4.5) === 'rating-gold', `4.5分应是金色，实际: ${getRatingClass(4.5)}`);
-  assert(getRatingClass(4.9) === 'rating-gold', `4.9分应是金色，实际: ${getRatingClass(4.9)}`);
+test("评分分类 - 顶级推荐", () => {
+  assert(getRatingClass(4.7) === 'rating-top', `4.7分应是顶级推荐，实际: ${getRatingClass(4.7)}`);
+  assert(getRatingClass(4.9) === 'rating-top', `4.9分应是顶级推荐，实际: ${getRatingClass(4.9)}`);
 });
 
-test("评分分类 - 绿色", () => {
-  const getRatingClass = (rating) => {
-    const numRating = Number(rating) || 0;
-    return numRating >= 4.5 ? 'rating-gold' : numRating >= 4 ? 'rating-green' : 'rating-gray';
-  };
-
-  assert(getRatingClass(4.0) === 'rating-green', `4.0分应是绿色，实际: ${getRatingClass(4.0)}`);
-  assert(getRatingClass(4.4) === 'rating-green', `4.4分应是绿色，实际: ${getRatingClass(4.4)}`);
+test("评分分类 - 高分推荐", () => {
+  assert(getRatingClass(4.4) === 'rating-high', `4.4分应是高分推荐，实际: ${getRatingClass(4.4)}`);
+  assert(getRatingClass(4.6) === 'rating-high', `4.6分应是高分推荐，实际: ${getRatingClass(4.6)}`);
 });
 
-test("评分分类 - 灰色", () => {
-  const getRatingClass = (rating) => {
-    const numRating = Number(rating) || 0;
-    return numRating >= 4.5 ? 'rating-gold' : numRating >= 4 ? 'rating-green' : 'rating-gray';
-  };
+test("评分分类 - 中等可选", () => {
+  assert(getRatingClass(4.0) === 'rating-mid', `4.0分应是中等可选，实际: ${getRatingClass(4.0)}`);
+  assert(getRatingClass(4.3) === 'rating-mid', `4.3分应是中等可选，实际: ${getRatingClass(4.3)}`);
+});
 
-  assert(getRatingClass(3.9) === 'rating-gray', `3.9分应是灰色，实际: ${getRatingClass(3.9)}`);
-  assert(getRatingClass(3.0) === 'rating-gray', `3.0分应是灰色，实际: ${getRatingClass(3.0)}`);
-  assert(getRatingClass(null) === 'rating-gray', `null应是灰色，实际: ${getRatingClass(null)}`);
-  assert(getRatingClass(undefined) === 'rating-gray', `undefined应是灰色，实际: ${getRatingClass(undefined)}`);
+test("评分分类 - 低分或暂无", () => {
+  assert(getRatingClass(3.9) === 'rating-low', `3.9分应是低分或暂无，实际: ${getRatingClass(3.9)}`);
+  assert(getRatingClass(3.0) === 'rating-low', `3.0分应是低分或暂无，实际: ${getRatingClass(3.0)}`);
+  assert(getRatingClass(null) === 'rating-low', `null应是低分或暂无，实际: ${getRatingClass(null)}`);
+  assert(getRatingClass(undefined) === 'rating-low', `undefined应是低分或暂无，实际: ${getRatingClass(undefined)}`);
 });
 
 // ========== API 测试 ==========
