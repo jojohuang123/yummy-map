@@ -1,44 +1,33 @@
-/* ============================================
-   美食地图助手 - 导入页样式
-   精致可爱美食家手帐风格
-   ============================================ */
-
-/* ===== 图片选择器 ===== */
 .picker-value {
-  height: 88rpx;
-  border-radius: var(--radius-lg);
-  background: #F5F0EB;
-  padding: 0 24rpx;
-  line-height: 88rpx;
+  height: 84rpx;
+  border-radius: var(--radius-md);
+  background: var(--bg-soft);
+  padding: 0 22rpx;
+  line-height: 84rpx;
   font-size: 28rpx;
   color: var(--text-primary);
-  border: 2rpx solid var(--border-light);
 }
 
-/* ===== 开发信息卡片 ===== */
+.dev-card {
+  background: var(--bg-soft);
+}
+
 .dev-card .muted-text + .muted-text {
-  margin-top: 10rpx;
+  margin-top: 8rpx;
 }
 
-/* ===== 文本输入区 ===== */
 .text-area {
   width: 100%;
   min-height: 280rpx;
-  background: #F5F0EB;
-  border-radius: var(--radius-lg);
+  background: var(--bg-soft);
+  border-radius: var(--radius-md);
   padding: 20rpx;
   box-sizing: border-box;
   font-size: 28rpx;
-  color: var(--text-primary);
-  border: 2rpx solid var(--border-light);
   line-height: 1.6;
+  color: var(--text-primary);
 }
 
-.text-area:focus {
-  border-color: var(--color-coral);
-}
-
-/* ===== 图片网格 ===== */
 .image-grid {
   display: flex;
   gap: 16rpx;
@@ -48,23 +37,15 @@
 .image-slot {
   width: 206rpx;
   height: 206rpx;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   overflow: hidden;
 }
 
-/* 上传槽位 */
 .upload-slot {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2rpx dashed var(--border-light);
-  background: #F5F0EB;
-  transition: all 0.2s ease;
-}
-
-.upload-slot:active {
-  background: rgba(255, 123, 107, 0.08);
-  border-color: var(--color-coral);
+  background: var(--bg-soft);
 }
 
 .upload-text {
@@ -72,11 +53,9 @@
   color: var(--text-secondary);
 }
 
-/* 已填充槽位 */
 .filled-slot {
   position: relative;
-  background: var(--bg-card);
-  border: 2rpx solid var(--border-light);
+  background: var(--bg-soft);
 }
 
 .preview-image {
@@ -84,52 +63,50 @@
   height: 100%;
 }
 
-/* 删除按钮 */
 .remove-button {
   position: absolute;
   right: 12rpx;
   bottom: 12rpx;
-  height: 54rpx;
-  line-height: 54rpx;
-  border-radius: 999rpx;
+  height: 50rpx;
+  line-height: 50rpx;
+  border-radius: var(--radius-pill);
   font-size: 22rpx;
   margin: 0;
-  padding: 0 18rpx;
-  background: rgba(0, 0, 0, 0.5);
-  color: #fff;
+  padding: 0 16rpx;
+  background: rgba(52, 42, 36, 0.75);
+  color: var(--text-inverse);
 }
 
 .remove-button::after {
   border: none;
 }
 
-/* ===== 状态卡片 ===== */
 .status-card {
-  margin-top: 24rpx;
-  padding: 20rpx 24rpx;
-  background: rgba(91, 200, 175, 0.1);
-  border-radius: var(--radius-md);
-  border: 1rpx solid rgba(91, 200, 175, 0.3);
+  background: var(--bg-soft);
+}
+
+.status-card .section-title {
+  margin-bottom: 10rpx;
 }
 
 .status-card .muted-text {
-  color: var(--color-mint);
+  color: var(--text-secondary);
 }
 
 .error-card {
-  margin-top: 24rpx;
-  padding: 20rpx 24rpx;
-  background: rgba(255, 107, 107, 0.1);
-  border-radius: var(--radius-md);
-  border: 1rpx solid rgba(255, 107, 107, 0.3);
+  background: var(--color-primary-soft);
+}
+
+.error-card .section-title {
+  margin-bottom: 10rpx;
 }
 
 .error-text {
-  color: var(--color-strawberry);
+  color: var(--danger-soft);
   font-size: 26rpx;
+  line-height: 1.5;
 }
 
-/* ===== 导入按钮 ===== */
-.import-map-button {
-  margin-top: 20rpx;
+.import-map-link {
+  margin-top: 18rpx;
 }

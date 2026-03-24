@@ -1,13 +1,13 @@
 <view class="page-shell">
   <view class="page-title">一键导入你种草的店</view>
-  <view class="page-subtitle">粘贴店名文本，或上传截图让我帮你识别。导入前会先给你看评分、人均、地址和匹配状态。</view>
+  <view class="page-subtitle">把散落在截图和评论区里的店名，整理成一张干净好用的美食地图。</view>
 
   <view class="section-card">
-    <view class="section-title">目标省份</view>
+    <view class="section-title">目标城市</view>
     <picker range="{{cityOptions}}" range-key="name" value="{{cityIndex}}" bindchange="handleCityChange">
       <view class="picker-value">{{cityOptions[cityIndex].name}} ▼</view>
     </picker>
-    <view class="muted-text">默认自动识别；如果结果不准，再手动切换省份重试。</view>
+    <view class="muted-text">默认自动识别；如果结果不准，再手动切换城市或省份后重试。</view>
   </view>
 
   <view class="section-card dev-card" wx:if="{{apiMode === '本机开发者工具调试'}}">
@@ -61,5 +61,5 @@
   </block>
 
   <button class="primary-button" loading="{{isSubmitting}}" disabled="{{isSubmitting}}" bindtap="handleSubmit">开始识别</button>
-  <button class="secondary-button import-map-button" bindtap="handleGoMap">查看收藏地图</button>
+  <view class="import-map-link text-button text-button-accent" bindtap="handleGoMap">查看收藏地图</view>
 </view>

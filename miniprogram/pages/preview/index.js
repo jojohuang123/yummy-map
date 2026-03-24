@@ -7,23 +7,21 @@ Page({
     status: "",
     rawCandidateCount: 0,
     filteredCount: 0,
+    allItems: [],
     summary: {
       total: 0,
       matched: 0,
       selected: 0
     },
     items: [],
-    // 渲染用的列表，受滤镜影响
-    
     isSubmitting: false,
     isEnriching: false,
-    // 当前选中的分数过滤器
-    filterType: "all", // all | 4.5+ | 4.0-4.4 | <4.0
+    filterType: "all",
     filters: [
       { id: "all", label: "全部" },
-      { id: "4.5+", label: "4.5分以上" },
-      { id: "4.0-4.4", label: "4.0-4.4分" },
-      { id: "<4.0", label: "4分以下/暂无" }
+      { id: "4.5+", label: "4.5+" },
+      { id: "4.0-4.4", label: "4.0-4.4" },
+      { id: "<4.0", label: "低分/暂无" }
     ]
   },
 
@@ -54,20 +52,22 @@ Page({
   },
 
   applyPreview(importId, preview) {
-    const allItems = preview.items || [];
-    const visibleItems = allItems.filter(
+    const allItems = (preview.items || []).filter(
       (item) => item.matchStatus === "matched" || item.matchStatus === "filtered"
     );
+    const decoratedItems = this.decorateItems(allItems);
+    const summary = preview.summary || this.buildSummary(decoratedItems);
+
     this.setData({
       importId,
       status: preview.status || "",
       rawCandidateCount: Number(preview.rawCandidateCount || 0),
-      filteredCount: allItems.filter((item) => item.matchStatus === "filtered").length,
+      filteredCount: decoratedItems.filter((item) => item.matchStatus === "filtered").length,
       isEnriching: preview.status === "enriching",
-      summary: preview.summary || { total: 0, matched: 0, selected: 0 },
-      items: this.decorateItems(visibleItems)
+      summary,
+      allItems: decoratedItems,
+      items: this.getVisibleItems(decoratedItems, this.data.filterType)
     });
-    
   },
 
   decorateItems(items) {
@@ -77,15 +77,59 @@ Page({
 
       if (numRating >= 4.5) {
         ratingClass = "rating-gold";
-      } else if (numRating >= 4.0 && numRating < 4.5) {
+      } else if (numRating >= 4.0) {
         ratingClass = "rating-green";
       }
 
       return Object.assign({}, item, {
-        cardClass: item.matchStatus === "pending" ? "item-card-pending" : item.matchStatus !== "matched" ? "item-card-disabled" : "",
-        ratingClass
+        cardClass: item.matchStatus !== "matched" ? "item-card-disabled" : "",
+        ratingClass,
+        sourceLabel: `来源词：${item.inputName || "-"}`,
+        tagText: item.topTagsLabel || "暂无标签"
       });
     });
+  },
+
+  buildSummary(items) {
+    const matched = items.filter((item) => item.matchStatus === "matched").length;
+    const selected = items.filter((item) => item.matchStatus === "matched" && item.selected).length;
+
+    return {
+      total: matched,
+      matched,
+      selected
+    };
+  },
+
+  getVisibleItems(items, filterType) {
+    if (filterType === "all") return items;
+
+    return items.filter((item) => {
+      if (item.matchStatus !== "matched") return false;
+
+      const rating = Number(item.rating) || 0;
+      if (filterType === "4.5+") return rating >= 4.5;
+      if (filterType === "4.0-4.4") return rating >= 4.0 && rating < 4.5;
+      if (filterType === "<4.0") return rating < 4.0;
+      return true;
+    });
+  },
+
+  refreshVisibleItems(allItems, nextState = {}) {
+    const filterType = nextState.filterType || this.data.filterType;
+    const summary = nextState.summary || this.buildSummary(allItems);
+
+    this.setData(
+      Object.assign(
+        {
+          allItems,
+          items: this.getVisibleItems(allItems, filterType),
+          filteredCount: allItems.filter((item) => item.matchStatus === "filtered").length,
+          summary
+        },
+        nextState
+      )
+    );
   },
 
   startPolling() {
@@ -111,28 +155,24 @@ Page({
   },
 
   updateSummary(items) {
-    const matched = items.filter((item) => item.matchStatus === "matched").length;
-    const selected = items.filter((item) => item.selected).length;
-
-    this.setData({
-      items: this.decorateItems(items),
-      filteredCount: Math.max(this.data.rawCandidateCount - matched, 0),
-      summary: {
-        total: items.length,
-        matched,
-        selected
-      }
+    const decoratedItems = this.decorateItems(items);
+    this.refreshVisibleItems(decoratedItems, {
+      summary: this.buildSummary(decoratedItems)
     });
-    
   },
 
-  
+  handleFilterChange(event) {
+    const filterType = event.currentTarget.dataset.filter;
+    if (!filterType || filterType === this.data.filterType) return;
 
-  
+    this.refreshVisibleItems(this.data.allItems, {
+      filterType
+    });
+  },
 
   handleToggle(event) {
     const itemId = event.currentTarget.dataset.id;
-    const nextItems = this.data.items.map((item) => {
+    const nextItems = this.data.allItems.map((item) => {
       if (item.id !== itemId || item.matchStatus !== "matched") return item;
       return Object.assign({}, item, { selected: !item.selected });
     });
@@ -140,19 +180,19 @@ Page({
   },
 
   handleSelectAll() {
-    const nextItems = this.data.items.map((item) =>
+    const nextItems = this.data.allItems.map((item) =>
       Object.assign({}, item, { selected: item.matchStatus === "matched" })
     );
     this.updateSummary(nextItems);
   },
 
   handleSelectNone() {
-    const nextItems = this.data.items.map((item) => Object.assign({}, item, { selected: false }));
+    const nextItems = this.data.allItems.map((item) => Object.assign({}, item, { selected: false }));
     this.updateSummary(nextItems);
   },
 
   handleOnlyMatched() {
-    const nextItems = this.data.items.map((item) =>
+    const nextItems = this.data.allItems.map((item) =>
       Object.assign({}, item, { selected: item.matchStatus === "matched" })
     );
     this.updateSummary(nextItems);
@@ -179,7 +219,7 @@ Page({
 
     this.setData({ isSubmitting: true });
     try {
-      const selectedIds = this.data.items.filter((i) => i.selected).map((i) => i.id);
+      const selectedIds = this.data.allItems.filter((item) => item.selected).map((item) => item.id);
       await api.updateImportItems(this.data.importId, selectedIds);
       const result = await api.confirmImport(this.data.importId);
       app.globalData.focusFavoriteId = "";
