@@ -28,7 +28,7 @@
 
   <view class="map-stats">
     <text class="stats-text">
-      共找到 <text class="highlight-count-small">{{filteredFavorites.length}}</text> 家收藏
+      已收藏 <text class="highlight-count-small">{{filteredFavorites.length}}</text> 家
       <text wx:if="{{searchKeyword || cityList[cityIndex].adcode}}">（筛选结果）</text>
     </text>
     <view class="map-link" bindtap="handleGoList">查看清单</view>
@@ -58,8 +58,8 @@
         <view class="drag-indicator"></view>
       </view>
 
-      <view class="current-store-section" wx:if="{{selectedFavorite}}">
-        <view class="current-store-card">
+      <view class="current-store-section {{panelExpanded ? 'current-store-section-expanded' : ''}}" wx:if="{{selectedFavorite}}">
+        <view class="current-store-card {{panelExpanded ? 'current-store-card-compact' : ''}}">
           <view class="card-header">
             <view class="card-title-group">
               <view class="store-name">{{selectedFavorite.name}}</view>
@@ -70,6 +70,7 @@
           <view class="card-body">
             <view class="meta-row">
               <text class="cost-label">人均 {{selectedFavorite.costLabel}}</text>
+              <text class="distance-pill" wx:if="{{selectedFavorite.nearestDistanceText}}">附近 {{selectedFavorite.nearestDistanceText}}</text>
               <text class="business-area" wx:if="{{selectedFavorite.businessArea}}">{{selectedFavorite.businessArea}}</text>
             </view>
 
@@ -79,7 +80,7 @@
 
             <view class="address-row">{{selectedFavorite.address}}</view>
 
-            <view class="card-actions">
+            <view class="card-actions" wx:if="{{!panelExpanded}}">
               <button class="primary-button card-cta" bindtap="handleNavigate">导航到这</button>
               <view class="text-button remove-link" bindtap="handleRemoveFavorite">从收藏移除</view>
             </view>
@@ -90,7 +91,6 @@
       <view class="nearby-section" wx:if="{{panelExpanded && nearbyStores.length > 0}}">
         <view class="nearby-header">
           <view class="nearby-title">附近商家</view>
-          <view class="nearby-hint">{{selectedFavorite.name}} 附近还有 {{nearbyStores.length}} 家</view>
         </view>
 
         <scroll-view class="nearby-list" scroll-y enhanced show-scrollbar="false">

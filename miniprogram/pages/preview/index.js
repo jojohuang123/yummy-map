@@ -14,6 +14,7 @@ Page({
       selected: 0
     },
     items: [],
+    groups: [],
     isSubmitting: false,
     isEnriching: false,
     filterType: "all",
@@ -66,27 +67,50 @@ Page({
       isEnriching: preview.status === "enriching",
       summary,
       allItems: decoratedItems,
-      items: this.getVisibleItems(decoratedItems, this.data.filterType)
+      items: this.getVisibleItems(decoratedItems, this.data.filterType),
+      groups: this.buildGroups(this.getVisibleItems(decoratedItems, this.data.filterType), this.data.filterType)
     });
   },
 
   decorateItems(items) {
-    return items.map((item) => {
-      let ratingClass = "rating-gray";
+    const decoratedItems = items.map((item, index) => {
+      let ratingClass = "rating-low";
       const numRating = Number(item.rating) || 0;
+      const isMatched = item.matchStatus === "matched";
+      let priority = 0;
 
-      if (numRating >= 4.5) {
-        ratingClass = "rating-gold";
+      if (numRating >= 4.7) {
+        ratingClass = "rating-top";
+      } else if (numRating >= 4.4) {
+        ratingClass = "rating-high";
       } else if (numRating >= 4.0) {
-        ratingClass = "rating-green";
+        ratingClass = "rating-mid";
+      }
+
+      if (isMatched) {
+        priority = 1000 + numRating;
+      } else {
+        priority = index * -1;
       }
 
       return Object.assign({}, item, {
-        cardClass: item.matchStatus !== "matched" ? "item-card-disabled" : "",
+        cardClass: isMatched ? "" : "item-card-disabled",
+        isMatched,
         ratingClass,
+        ratingBadgeText: item.rating ? `★ ${item.rating}` : "未评分",
         sourceLabel: `来源词：${item.inputName || "-"}`,
-        tagText: item.topTagsLabel || "暂无标签"
+        tagText: item.topTagsLabel || "",
+        showTag: Boolean(item.topTagsLabel),
+        priority,
+        statusHint: isMatched ? "可导入" : "暂不建议导入"
       });
+    });
+
+    return decoratedItems.sort((left, right) => {
+      if (left.isMatched !== right.isMatched) {
+        return left.isMatched ? -1 : 1;
+      }
+      return (right.priority || 0) - (left.priority || 0);
     });
   },
 
@@ -115,15 +139,43 @@ Page({
     });
   },
 
+  buildGroups(items, filterType) {
+    const matchedItems = items.filter((item) => item.isMatched);
+    const filteredItems = items.filter((item) => !item.isMatched);
+    const groups = [];
+
+    if (matchedItems.length) {
+      groups.push({
+        id: "matched",
+        title: filterType === "all" ? "推荐导入" : "符合当前筛选",
+        hint: filterType === "all" ? "这些门店信息更完整，建议优先挑选。" : "",
+        items: matchedItems
+      });
+    }
+
+    if (filterType === "all" && filteredItems.length) {
+      groups.push({
+        id: "filtered",
+        title: "暂不建议导入",
+        hint: "这些结果匹配度较弱或信息不完整，先放在后面。",
+        items: filteredItems
+      });
+    }
+
+    return groups;
+  },
+
   refreshVisibleItems(allItems, nextState = {}) {
     const filterType = nextState.filterType || this.data.filterType;
     const summary = nextState.summary || this.buildSummary(allItems);
+    const items = this.getVisibleItems(allItems, filterType);
 
     this.setData(
       Object.assign(
         {
           allItems,
-          items: this.getVisibleItems(allItems, filterType),
+          items,
+          groups: this.buildGroups(items, filterType),
           filteredCount: allItems.filter((item) => item.matchStatus === "filtered").length,
           summary
         },
@@ -222,6 +274,9 @@ Page({
       const selectedIds = this.data.allItems.filter((item) => item.selected).map((item) => item.id);
       await api.updateImportItems(this.data.importId, selectedIds);
       const result = await api.confirmImport(this.data.importId);
+      app.globalData.pendingImportFocus = {
+        importId: result.importId
+      };
       app.globalData.focusFavoriteId = "";
       wx.showModal({
         title: "导入成功",

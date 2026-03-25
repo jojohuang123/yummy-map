@@ -50,43 +50,47 @@
     </view>
   </block>
 
-  <block wx:for="{{items}}" wx:key="id">
-    <view class="section-card item-card {{item.cardClass}}">
-      <view class="card-shell" data-id="{{item.id}}" bindtap="handleToggle">
-        <block wx:if="{{item.matchStatus === 'matched'}}">
-          <view class="checkbox {{item.selected ? 'checkbox-checked' : ''}}">
-            <text wx:if="{{item.selected}}">✓</text>
+  <block wx:for="{{groups}}" wx:key="id">
+    <view class="group-header">
+      <view class="group-title">{{item.title}}</view>
+      <view class="group-hint" wx:if="{{item.hint}}">{{item.hint}}</view>
+    </view>
+
+    <block wx:for="{{item.items}}" wx:key="id" wx:for-item="shop">
+      <view class="section-card item-card {{shop.cardClass}}">
+        <view class="card-shell" data-id="{{shop.id}}" bindtap="handleToggle">
+          <block wx:if="{{shop.isMatched}}">
+            <view class="checkbox {{shop.selected ? 'checkbox-checked' : ''}}">
+              <text wx:if="{{shop.selected}}">✓</text>
+            </view>
+          </block>
+          <block wx:else>
+            <view class="checkbox checkbox-disabled"></view>
+          </block>
+
+          <view class="card-main">
+            <view class="title-row">
+              <view class="item-name">{{shop.poiName}}</view>
+
+              <block wx:if="{{shop.isMatched}}">
+                <view class="rating-badge {{shop.ratingClass}}">{{shop.ratingBadgeText}}</view>
+              </block>
+            </view>
+
+            <view class="meta-row">
+              <text class="cost-label">人均 {{shop.costLabel}}</text>
+            </view>
+
+            <view class="tag-row" wx:if="{{shop.showTag}}">
+              <text class="tag-label">{{shop.tagText}}</text>
+            </view>
+
+            <view class="detail-address">{{shop.addressLabel}}</view>
+            <view class="source-text">{{shop.sourceLabel}}</view>
           </view>
-        </block>
-        <block wx:else>
-          <view class="checkbox checkbox-disabled"></view>
-        </block>
-
-        <view class="card-main">
-          <view class="title-row">
-            <view class="item-name">{{item.poiName}}</view>
-
-            <block wx:if="{{item.matchStatus === 'matched'}}">
-              <view class="rating-badge {{item.ratingClass}}">
-                <text wx:if="{{item.rating}}">{{item.rating}}</text>
-                <text wx:else>{{item.ratingLabel}}</text>
-              </view>
-            </block>
-          </view>
-
-          <view class="meta-row">
-            <text class="cost-label">人均 {{item.costLabel}}</text>
-          </view>
-
-          <view class="tag-row">
-            <text class="tag-label">{{item.tagText}}</text>
-          </view>
-
-          <view class="detail-address">{{item.addressLabel}}</view>
-          <view class="source-text">{{item.sourceLabel}}</view>
         </view>
       </view>
-    </view>
+    </block>
   </block>
 
   <view class="footer-bar">

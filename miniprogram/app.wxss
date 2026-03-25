@@ -107,16 +107,20 @@ page {
 
 /* ===== 主按钮 ===== */
 .primary-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: var(--color-primary);
   color: var(--text-inverse);
   border-radius: var(--radius-pill);
   font-size: 30rpx;
   font-weight: 600;
   height: 88rpx;
-  line-height: 88rpx;
+  line-height: 1;
   text-align: center;
   border: none;
   box-shadow: var(--shadow-primary);
+  box-sizing: border-box;
 }
 
 .primary-button::after {
@@ -135,15 +139,19 @@ page {
 
 /* ===== 次要按钮 ===== */
 .secondary-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: var(--bg-card);
   color: var(--text-secondary);
   border: 1rpx solid var(--line-strong);
   border-radius: var(--radius-pill);
   font-size: 26rpx;
   height: 72rpx;
-  line-height: 72rpx;
+  line-height: 1;
   text-align: center;
   padding: 0 24rpx;
+  box-sizing: border-box;
 }
 
 .secondary-button::after {
@@ -156,14 +164,18 @@ page {
 
 /* ===== 危险按钮 ===== */
 .danger-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: var(--bg-white);
   color: var(--color-danger);
   border: 1rpx solid var(--color-primary-muted);
   border-radius: var(--radius-pill);
   font-size: 26rpx;
   height: 68rpx;
-  line-height: 68rpx;
+  line-height: 1;
   text-align: center;
+  box-sizing: border-box;
 }
 
 .danger-button::after {
@@ -242,31 +254,32 @@ page {
 }
 
 .rating-top {
-  background: linear-gradient(180deg, #F2C35A 0%, #DCA240 100%);
-  color: #FFF9EE;
+  background: #D96850;
+  color: #FFF9F6;
 }
 
 .rating-high {
-  background: linear-gradient(180deg, #F19B53 0%, #DF7E42 100%);
-  color: #FFF9F0;
+  background: #EA8B61;
+  color: #FFF9F2;
 }
 
 .rating-mid {
-  background: rgba(217, 124, 98, 0.16);
-  color: #A65C47;
+  background: #F3D5BA;
+  color: #9A5D45;
 }
 
 .rating-low {
-  background: var(--bg-soft);
-  color: var(--text-secondary);
+  background: #E6DDD4;
+  color: #8C7A6A;
 }
 
 /* ===== 卡片头部组 ===== */
 .card-title-group {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10rpx;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  min-width: 0;
 }
 
 /* ===== 搜索框 ===== */

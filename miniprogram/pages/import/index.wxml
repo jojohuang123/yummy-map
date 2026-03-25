@@ -1,14 +1,24 @@
 <view class="page-shell import-shell">
   <view class="import-hero">
     <view class="hero-kicker">Yummy Map</view>
-    <view class="page-title">把想吃的店，收进地图</view>
-    <view class="page-subtitle">贴一段店名，或传一张截图，我们帮你整理。</view>
+    <view class="hero-title-stack">
+      <view class="page-title">把想吃的店</view>
+      <view class="page-title accent-title">变成你的私藏地图</view>
+    </view>
+    <view class="page-subtitle">评论区、截图、笔记里的店，我们替你收好。</view>
+    <view class="hero-chips">
+      <view class="hero-chip">评论区</view>
+      <view class="hero-chip">截图</view>
+      <view class="hero-chip">收藏夹</view>
+    </view>
   </view>
 
   <view class="flow-card">
+    <view class="flow-top-strip"></view>
     <view class="flow-header">
-      <view class="flow-title">开始整理你的美食线索</view>
-      <view class="flow-desc">先选城市，再补充文字或截图，最后一键识别。</view>
+      <view class="flow-eyebrow">TODAY'S MENU</view>
+      <view class="flow-title">把散落的店名，整理成一张清楚好逛的地图</view>
+      <view class="flow-desc">先选城市，再贴文字或补截图，最后一键整理。</view>
     </view>
 
     <view class="flow-step">

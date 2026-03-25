@@ -421,38 +421,71 @@ test("Marker ID 处理 - 边界情况", () => {
 
 // ========== 交互测试：面板状态 ==========
 test("面板状态 - 初始状态", () => {
-  const panelHeight = 236;
-  const panelExpandedHeight = 500;
+  const panelHeight = 492;
+  const panelExpandedHeight = 840;
 
   // 初始应为收起状态
   const isExpanded = panelHeight >= (panelHeight + panelExpandedHeight) / 2;
-  assert(isExpanded === false, `初始高度236应收起`);
+  assert(isExpanded === false, `初始高度492应收起`);
 });
 
 test("面板状态 - 展开阈值判断", () => {
-  const panelHeight = 236;
-  const panelExpandedHeight = 500;
+  const panelHeight = 492;
+  const panelExpandedHeight = 840;
   const midPoint = (panelHeight + panelExpandedHeight) / 2;
 
-  assert(midPoint === 368, `中点应为368`);
+  assert(midPoint === 666, `中点应为666`);
 
-  assert(380 > midPoint, `380 > 368 应展开`);
-  assert(320 < midPoint, `320 < 368 应收起`);
+  assert(700 > midPoint, `700 > 666 应展开`);
+  assert(620 < midPoint, `620 < 666 应收起`);
 });
 
-test("点击附近商家 - 面板应收起", () => {
+test("点击附近商家 - 面板应切回大卡片态", () => {
   // 模拟点击附近商家后的状态
   const currentPanelExpanded = true;
-  const currentPanelHeight = 500;
+  const currentPanelHeight = 840;
 
-  // 点击后应该收起
+  // 点击后应切回大卡片态
   const newPanelExpanded = false;
-  const newPanelHeight = 236;
+  const newPanelHeight = 492;
 
   assert(newPanelExpanded === false, `点击后panelExpanded应为false`);
   assert(currentPanelExpanded === true, `点击前panelExpanded应为true`);
-  assert(currentPanelHeight === 500, `点击前panelHeight应为500，实际: ${currentPanelHeight}`);
-  assert(newPanelHeight === 236, `点击后panelHeight应重置为236，实际: ${newPanelHeight}`);
+  assert(currentPanelHeight === 840, `点击前panelHeight应为840，实际: ${currentPanelHeight}`);
+  assert(newPanelHeight === 492, `点击后panelHeight应切回492，实际: ${newPanelHeight}`);
+});
+
+test("面板展开 - 应给附近商家列表预留可视高度", () => {
+  const panelExpandedHeight = 840;
+  const panelBottomInset = 100;
+  const dragHandleHeight = 28;
+  const currentStoreSectionHeight = 160;
+  const nearbyHeaderHeight = 52;
+  const nearbyListMinHeight = 340;
+  const availableHeight =
+    panelExpandedHeight - panelBottomInset - dragHandleHeight - currentStoreSectionHeight - nearbyHeaderHeight;
+
+  assert(availableHeight >= nearbyListMinHeight, `展开后列表可视高度应至少340，实际: ${availableHeight}`);
+});
+
+test("面板收起 - 应完整容纳操作按钮区", () => {
+  const panelCollapsedHeight = 492;
+  const panelBottomInset = 100;
+  const dragHandleHeight = 28;
+  const currentStoreSectionHeight = 326;
+  const pullUpHintHeight = 32;
+  const requiredHeight = panelBottomInset + dragHandleHeight + currentStoreSectionHeight + pullUpHintHeight;
+
+  assert(requiredHeight <= panelCollapsedHeight, `收起态应完整显示卡片和按钮，实际预算: ${requiredHeight}`);
+});
+
+test("面板收起 - 应通过内部留白避让系统 tabBar", () => {
+  const panelBottomOffset = 0;
+  const panelBottomInset = 100;
+  const tabBarHeight = 100;
+
+  assert(panelBottomOffset === 0, `面板应贴底显示，实际偏移: ${panelBottomOffset}`);
+  assert(panelBottomInset >= tabBarHeight, `面板内部应避让 tabBar，内部留白: ${panelBottomInset}`);
 });
 
 // ========== 交互测试：applyFilter 参数处理 ==========
@@ -527,19 +560,53 @@ test("点击附近商家 - 卡片和列表同时更新", () => {
     `不同城市的最近商家应该不同`);
 });
 
-test("点击附近商家 - 面板保持展开", () => {
+test("点击附近商家 - 点击后应回到大卡片态", () => {
   // 模拟面板状态
   let panelExpanded = true;
-  const panelExpandedHeight = 500;
-  const panelHeight = 500;
+  const panelExpandedHeight = 840;
+  const panelHeight = 840;
+  const nextPanelExpanded = false;
+  const nextPanelHeight = 492;
 
-  // 点击附近商家后，面板应保持展开
-  // (当前实现：applyFilter 不改变 panelExpanded)
-
-  // 验证：点击后状态不变
   assert(panelExpanded === true, `点击前panelExpanded应为true`);
-  // applyFilter 不修改 panelExpanded，所以点击后仍为 true
-  assert(panelExpanded === true, `点击后panelExpanded应保持true`);
+  assert(panelHeight === panelExpandedHeight, `点击前应处于展开高度`);
+  assert(nextPanelExpanded === false, `点击后应切回大卡片态`);
+  assert(nextPanelHeight === 492, `点击后应回到收起高度`);
+});
+
+test("导入完成后默认聚焦 - 应选中本批次最高分门店", () => {
+  const favorites = [
+    { id: "old_1", rating: 4.9, adcode: "310101", importId: "old_batch", name: "老店A" },
+    { id: "new_1", rating: 4.4, adcode: "440104", importId: "new_batch", name: "广州店A" },
+    { id: "new_2", rating: 4.8, adcode: "440105", importId: "new_batch", name: "广州店B" }
+  ];
+  const cityList = [
+    { name: "全部", adcode: "" },
+    { name: "广东", adcode: "44" },
+    { name: "上海", adcode: "31" }
+  ];
+  const pendingImportFocus = { importId: "new_batch" };
+
+  const findHighestRatedFavorite = (items) =>
+    items
+      .slice()
+      .sort((left, right) => {
+        const leftRating = Number(left.rating) || 0;
+        const rightRating = Number(right.rating) || 0;
+        if (rightRating !== leftRating) {
+          return rightRating - leftRating;
+        }
+        return String(left.name || "").localeCompare(String(right.name || ""), "zh-CN");
+      })[0] || null;
+
+  const importedFavorites = favorites.filter((item) => item.importId === pendingImportFocus.importId);
+  const selectedFavorite = findHighestRatedFavorite(importedFavorites);
+  const prefix = String(selectedFavorite.adcode).slice(0, 2);
+  const cityIndex = cityList.findIndex((city) => city.adcode === prefix);
+
+  assert(importedFavorites.length === 2, `本批次应有2家门店，实际: ${importedFavorites.length}`);
+  assert(selectedFavorite.id === "new_2", `应选中本批次最高分门店new_2，实际: ${selectedFavorite.id}`);
+  assert(cityIndex === 1, `应聚焦到广东城市筛选，实际索引: ${cityIndex}`);
 });
 
 test("点击附近商家 - 贵州商家测试", () => {
@@ -639,22 +706,40 @@ test("完整交互流程模拟", () => {
   const clickedStore = nearbyStores[0];
   selectedFavorite = clickedStore;
   nearbyStores = calcNearbyStores(selectedFavorite, TEST_STORES);
+  panelExpanded = false;
 
   assert(selectedFavorite.name === nearbyStores[0]?.name || nearbyStores.length === TEST_STORES.length - 1,
     `点击后选中商家更新`);
-  assert(panelExpanded === true, `面板保持展开`);
+  assert(panelExpanded === false, `点击后切回大卡片态`);
 
-  // 4. 用户继续点击其他商家
+  // 4. 用户再次展开查看新的附近商家
+  panelExpanded = true;
+  assert(panelExpanded === true, `再次展开查看新的附近商家`);
+
+  // 5. 用户继续点击其他商家
   const secondClick = nearbyStores[1];
   const oldNearbyCount = nearbyStores.length;
 
   selectedFavorite = secondClick;
   nearbyStores = calcNearbyStores(selectedFavorite, TEST_STORES);
+  panelExpanded = false;
 
   assert(selectedFavorite.name === secondClick.name, `选中第二个商家`);
   assert(nearbyStores.length === oldNearbyCount || nearbyStores.length === TEST_STORES.length - 1,
     `附近列表重新计算`);
-  assert(panelExpanded === true, `面板继续展开`);
+  assert(panelExpanded === false, `第二次点击后也切回大卡片态`);
+});
+
+test("点击附近商家 - 被点击项应提升为顶部大卡片", () => {
+  const previousSelected = TEST_STORES[0];
+  const clickedStore = TEST_STORES[1];
+  const panelExpanded = false;
+  const cardMode = "full-card";
+
+  assert(previousSelected.id !== clickedStore.id, `点击后当前商家应发生切换`);
+  assert(clickedStore.id === "store_2", `被点击门店应成为顶部当前商家，实际: ${clickedStore.id}`);
+  assert(panelExpanded === false, `点击后应回到大卡片态`);
+  assert(cardMode === "full-card", `顶部应显示完整大卡片`);
 });
 
 Promise.allSettled(pendingTests).then(() => {

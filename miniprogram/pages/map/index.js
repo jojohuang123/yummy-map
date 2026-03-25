@@ -15,28 +15,28 @@ Page({
     cityIndex: 0,
     searchKeyword: "",
     panelExpanded: false,
-    panelCollapsedHeight: 236,
-    panelHeight: 236,
-    panelExpandedHeight: 500,
+    panelCollapsedHeight: 492,
+    panelHeight: 492,
+    panelExpandedHeight: 840,
     nearbyStores: []
   },
 
   _markerConfig: {
-    hotpot: {
-      iconPath: "/assets/marker-hotpot.png",
-      activeIconPath: "/assets/marker-hotpot-active.png"
+    top: {
+      iconPath: "/assets/marker-score-top.png",
+      activeIconPath: "/assets/marker-score-top-active.png"
     },
-    grill: {
-      iconPath: "/assets/marker-grill.png",
-      activeIconPath: "/assets/marker-grill-active.png"
+    high: {
+      iconPath: "/assets/marker-score-high.png",
+      activeIconPath: "/assets/marker-score-high-active.png"
     },
-    dessert: {
-      iconPath: "/assets/marker-dessert.png",
-      activeIconPath: "/assets/marker-dessert-active.png"
+    mid: {
+      iconPath: "/assets/marker-score-mid.png",
+      activeIconPath: "/assets/marker-score-mid-active.png"
     },
-    default_food: {
-      iconPath: "/assets/marker-default-food.png",
-      activeIconPath: "/assets/marker-default-food-active.png"
+    low: {
+      iconPath: "/assets/marker-score-low.png",
+      activeIconPath: "/assets/marker-score-low-active.png"
     }
   },
 
@@ -67,20 +67,11 @@ Page({
   },
 
   _getMarkerType(favorite) {
-    const tags = `${(favorite.topTags || []).join(" ")} ${(favorite.topTagsLabel || "")}`.toLowerCase();
-
-    if (tags.includes("火锅")) return "hotpot";
-    if (tags.includes("烧烤") || tags.includes("烤肉")) return "grill";
-    if (
-      tags.includes("甜品") ||
-      tags.includes("蛋糕") ||
-      tags.includes("咖啡") ||
-      tags.includes("奶茶") ||
-      tags.includes("烘焙")
-    ) {
-      return "dessert";
-    }
-    return "default_food";
+    const rating = Number(favorite.rating) || 0;
+    if (rating >= 4.7) return "top";
+    if (rating >= 4.4) return "high";
+    if (rating >= 4.0) return "mid";
+    return "low";
   },
 
   _getCityName(adcode) {
@@ -149,7 +140,7 @@ Page({
   _buildMarkers(items, selectedFavorite) {
     return items.map((item, index) => {
       const isSelected = selectedFavorite && selectedFavorite.id === item.id;
-      const markerConfig = this._markerConfig[item.markerType] || this._markerConfig.default_food;
+      const markerConfig = this._markerConfig[item.markerType] || this._markerConfig.low;
 
       return {
         id: index,
@@ -157,14 +148,14 @@ Page({
         latitude: item.latitude,
         longitude: item.longitude,
         iconPath: isSelected ? markerConfig.activeIconPath : markerConfig.iconPath,
-        width: isSelected ? 42 : 34,
-        height: isSelected ? 58 : 46,
+        width: isSelected ? 40 : 32,
+        height: isSelected ? 54 : 44,
         anchor: {
           x: 0.5,
           y: 1
         },
         callout: {
-          content: item.name,
+          content: item.rating ? `${item.rating} · ${item.name}` : item.name,
           display: isSelected ? "ALWAYS" : "BYCLICKING",
           padding: isSelected ? 11 : 8,
           borderRadius: 18,
@@ -179,19 +170,67 @@ Page({
     });
   },
 
+  _findHighestRatedFavorite(items) {
+    if (!Array.isArray(items) || !items.length) return null;
+
+    return items
+      .slice()
+      .sort((left, right) => {
+        const leftRating = Number(left.rating) || 0;
+        const rightRating = Number(right.rating) || 0;
+        if (rightRating !== leftRating) {
+          return rightRating - leftRating;
+        }
+        return String(left.name || "").localeCompare(String(right.name || ""), "zh-CN");
+      })[0];
+  },
+
+  _resolveInitialFocus(favorites, cityList, focusFavoriteId, pendingImportFocus) {
+    let cityIndex = 0;
+    let selectedFavorite = null;
+    let shouldExpand = false;
+
+    if (focusFavoriteId) {
+      selectedFavorite = favorites.find((item) => item.id === focusFavoriteId) || null;
+    } else if (pendingImportFocus && pendingImportFocus.importId) {
+      const importedFavorites = favorites.filter((item) => item.importId === pendingImportFocus.importId);
+      selectedFavorite = this._findHighestRatedFavorite(importedFavorites);
+      shouldExpand = Boolean(selectedFavorite);
+    }
+
+    if (selectedFavorite && selectedFavorite.adcode) {
+      const prefix = String(selectedFavorite.adcode).slice(0, 2);
+      const foundIndex = cityList.findIndex((city) => city.adcode === prefix);
+      if (foundIndex > 0) {
+        cityIndex = foundIndex;
+      }
+    }
+
+    return {
+      cityIndex,
+      selectedFavorite,
+      shouldExpand
+    };
+  },
+
   async onShow() {
     const focusFavoriteId = app.globalData.focusFavoriteId;
+    const pendingImportFocus = app.globalData.pendingImportFocus;
     const response = await api.getFavoritesMap().catch(() => ({ items: [] }));
     const favorites = (response.items || []).map((item) => {
       const numRating = Number(item.rating) || 0;
       let ratingClass = "rating-low";
+      let markerType = "low";
 
       if (numRating >= 4.7) {
         ratingClass = "rating-top";
+        markerType = "top";
       } else if (numRating >= 4.4) {
         ratingClass = "rating-high";
+        markerType = "high";
       } else if (numRating >= 4.0) {
         ratingClass = "rating-mid";
+        markerType = "mid";
       }
 
       return Object.assign({}, item, {
@@ -200,33 +239,28 @@ Page({
         ratingBadgeText: item.rating ? `★ ${item.rating}` : "-",
         costLabel: item.cost ? `¥${item.cost}` : "-",
         ratingClass,
-        markerType: this._getMarkerType(item)
+        markerType
       });
     });
 
     this.allFavorites = favorites;
     const cityList = this._buildCityList(favorites);
-    let cityIndex = 0;
-    let selectedFavorite = null;
+    const { cityIndex, selectedFavorite, shouldExpand } = this._resolveInitialFocus(
+      favorites,
+      cityList,
+      focusFavoriteId,
+      pendingImportFocus
+    );
 
-    if (focusFavoriteId) {
-      selectedFavorite = favorites.find((item) => item.id === focusFavoriteId) || null;
-      if (selectedFavorite && selectedFavorite.adcode) {
-        const prefix = String(selectedFavorite.adcode).slice(0, 2);
-        const foundIndex = cityList.findIndex((city) => city.adcode === prefix);
-        if (foundIndex > 0) {
-          cityIndex = foundIndex;
-        }
-      }
-    }
+    app.globalData.pendingImportFocus = null;
 
     this.setData({
       favorites,
       cityList,
       cityIndex,
       searchKeyword: "",
-      panelExpanded: false,
-      panelHeight: this.data.panelCollapsedHeight
+      panelExpanded: shouldExpand,
+      panelHeight: shouldExpand ? this.data.panelExpandedHeight : this.data.panelCollapsedHeight
     });
 
     this.applyFilter(selectedFavorite || undefined);
@@ -258,7 +292,16 @@ Page({
           filteredFavorites[0] ||
           null;
 
-    const nearbyStores = this._calcNearbyStores(selectedFavorite, filteredFavorites);
+    const nearbyStores = this._calcNearbyStores(selectedFavorite, filteredFavorites).map((item) =>
+      Object.assign({}, item, {
+        ratingBadgeText: item.rating ? `★ ${item.rating}` : "未评分"
+      })
+    );
+    const decoratedSelectedFavorite = selectedFavorite
+      ? Object.assign({}, selectedFavorite, {
+          nearestDistanceText: nearbyStores[0] ? nearbyStores[0].distanceText : ""
+        })
+      : null;
     const markers = this._buildMarkers(filteredFavorites, selectedFavorite);
     const includePoints = filteredFavorites.map((item) => ({
       latitude: item.latitude,
@@ -283,7 +326,7 @@ Page({
       filteredFavorites,
       markers,
       includePoints,
-      selectedFavorite,
+      selectedFavorite: decoratedSelectedFavorite,
       nearbyStores,
       latitude,
       longitude,
@@ -367,6 +410,10 @@ Page({
     if (!targetFavorite) return;
 
     this.applyFilter(targetFavorite);
+    this.setData({
+      panelExpanded: false,
+      panelHeight: this.data.panelCollapsedHeight
+    });
   },
 
   handleCityChange(event) {
