@@ -38,13 +38,15 @@ Page({
     const response = await api.getFavorites().catch(() => ({ items: [] }));
     this.setData({
       favorites: (response.items || []).map((item) => {
-        let ratingClass = "rating-gray";
+        let ratingClass = "rating-low";
         const numRating = Number(item.rating) || 0;
-        let ratingLabel = item.rating || "-";
-        if (numRating >= 4.5) {
-          ratingClass = "rating-gold";
-        } else if (numRating >= 4.0 && numRating < 4.5) {
-          ratingClass = "rating-green";
+        let ratingLabel = item.rating ? `★ ${item.rating}` : "-";
+        if (numRating >= 4.7) {
+          ratingClass = "rating-top";
+        } else if (numRating >= 4.4) {
+          ratingClass = "rating-high";
+        } else if (numRating >= 4.0) {
+          ratingClass = "rating-mid";
         }
 
         return Object.assign({}, item, {
@@ -110,7 +112,7 @@ Page({
     const confirmed = await new Promise((resolve) => {
       wx.showModal({
         title: "确认删除",
-        content: `确定要删除这些讨厌的门店吗？`,
+        content: `确定要删除这 ${count} 家收藏门店吗？`,
         confirmColor: "#FF6B6B",
         success: (res) => resolve(res.confirm)
       });

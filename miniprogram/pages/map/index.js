@@ -15,9 +15,9 @@ Page({
     cityIndex: 0,
     searchKeyword: "",
     panelExpanded: false,
-    panelCollapsedHeight: 492,
-    panelHeight: 492,
-    panelExpandedHeight: 840,
+    panelCollapsedHeight: 440,
+    panelHeight: 440,
+    panelExpandedHeight: 780,
     nearbyStores: []
   },
 

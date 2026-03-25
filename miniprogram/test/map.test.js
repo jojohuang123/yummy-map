@@ -421,43 +421,43 @@ test("Marker ID 处理 - 边界情况", () => {
 
 // ========== 交互测试：面板状态 ==========
 test("面板状态 - 初始状态", () => {
-  const panelHeight = 492;
-  const panelExpandedHeight = 840;
+  const panelHeight = 440;
+  const panelExpandedHeight = 780;
 
   // 初始应为收起状态
   const isExpanded = panelHeight >= (panelHeight + panelExpandedHeight) / 2;
-  assert(isExpanded === false, `初始高度492应收起`);
+  assert(isExpanded === false, `初始高度440应收起`);
 });
 
 test("面板状态 - 展开阈值判断", () => {
-  const panelHeight = 492;
-  const panelExpandedHeight = 840;
+  const panelHeight = 440;
+  const panelExpandedHeight = 780;
   const midPoint = (panelHeight + panelExpandedHeight) / 2;
 
-  assert(midPoint === 666, `中点应为666`);
+  assert(midPoint === 610, `中点应为610`);
 
-  assert(700 > midPoint, `700 > 666 应展开`);
-  assert(620 < midPoint, `620 < 666 应收起`);
+  assert(660 > midPoint, `660 > 610 应展开`);
+  assert(560 < midPoint, `560 < 610 应收起`);
 });
 
 test("点击附近商家 - 面板应切回大卡片态", () => {
   // 模拟点击附近商家后的状态
   const currentPanelExpanded = true;
-  const currentPanelHeight = 840;
+  const currentPanelHeight = 780;
 
   // 点击后应切回大卡片态
   const newPanelExpanded = false;
-  const newPanelHeight = 492;
+  const newPanelHeight = 440;
 
   assert(newPanelExpanded === false, `点击后panelExpanded应为false`);
   assert(currentPanelExpanded === true, `点击前panelExpanded应为true`);
-  assert(currentPanelHeight === 840, `点击前panelHeight应为840，实际: ${currentPanelHeight}`);
-  assert(newPanelHeight === 492, `点击后panelHeight应切回492，实际: ${newPanelHeight}`);
+  assert(currentPanelHeight === 780, `点击前panelHeight应为780，实际: ${currentPanelHeight}`);
+  assert(newPanelHeight === 440, `点击后panelHeight应切回440，实际: ${newPanelHeight}`);
 });
 
 test("面板展开 - 应给附近商家列表预留可视高度", () => {
-  const panelExpandedHeight = 840;
-  const panelBottomInset = 100;
+  const panelExpandedHeight = 780;
+  const panelBottomInset = 24;
   const dragHandleHeight = 28;
   const currentStoreSectionHeight = 160;
   const nearbyHeaderHeight = 52;
@@ -469,8 +469,8 @@ test("面板展开 - 应给附近商家列表预留可视高度", () => {
 });
 
 test("面板收起 - 应完整容纳操作按钮区", () => {
-  const panelCollapsedHeight = 492;
-  const panelBottomInset = 100;
+  const panelCollapsedHeight = 440;
+  const panelBottomInset = 24;
   const dragHandleHeight = 28;
   const currentStoreSectionHeight = 326;
   const pullUpHintHeight = 32;
@@ -479,13 +479,12 @@ test("面板收起 - 应完整容纳操作按钮区", () => {
   assert(requiredHeight <= panelCollapsedHeight, `收起态应完整显示卡片和按钮，实际预算: ${requiredHeight}`);
 });
 
-test("面板收起 - 应通过内部留白避让系统 tabBar", () => {
+test("面板收起 - 底部留白不应过大", () => {
   const panelBottomOffset = 0;
-  const panelBottomInset = 100;
-  const tabBarHeight = 100;
+  const panelBottomInset = 24;
 
   assert(panelBottomOffset === 0, `面板应贴底显示，实际偏移: ${panelBottomOffset}`);
-  assert(panelBottomInset >= tabBarHeight, `面板内部应避让 tabBar，内部留白: ${panelBottomInset}`);
+  assert(panelBottomInset <= 40, `底部留白应保持克制，实际留白: ${panelBottomInset}`);
 });
 
 // ========== 交互测试：applyFilter 参数处理 ==========
@@ -563,15 +562,15 @@ test("点击附近商家 - 卡片和列表同时更新", () => {
 test("点击附近商家 - 点击后应回到大卡片态", () => {
   // 模拟面板状态
   let panelExpanded = true;
-  const panelExpandedHeight = 840;
-  const panelHeight = 840;
+  const panelExpandedHeight = 780;
+  const panelHeight = 780;
   const nextPanelExpanded = false;
-  const nextPanelHeight = 492;
+  const nextPanelHeight = 440;
 
   assert(panelExpanded === true, `点击前panelExpanded应为true`);
   assert(panelHeight === panelExpandedHeight, `点击前应处于展开高度`);
   assert(nextPanelExpanded === false, `点击后应切回大卡片态`);
-  assert(nextPanelHeight === 492, `点击后应回到收起高度`);
+  assert(nextPanelHeight === 440, `点击后应回到收起高度`);
 });
 
 test("导入完成后默认聚焦 - 应选中本批次最高分门店", () => {

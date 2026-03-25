@@ -23,8 +23,8 @@
   min-width: 106rpx;
   height: 76rpx;
   padding: 0 22rpx;
-  background: rgba(255, 253, 249, 0.88);
-  border: 1rpx solid rgba(217, 124, 98, 0.18);
+  background: rgba(255, 253, 249, 0.84);
+  border: 1rpx solid rgba(217, 124, 98, 0.12);
   border-radius: var(--radius-pill);
   display: flex;
   align-items: center;
@@ -33,7 +33,7 @@
   color: var(--text-primary);
   font-size: 28rpx;
   font-weight: 600;
-  box-shadow: 0 6rpx 20rpx rgba(52, 42, 36, 0.05);
+  box-shadow: 0 4rpx 10rpx rgba(52, 42, 36, 0.025);
 }
 
 .picker-arrow {
@@ -46,27 +46,29 @@
   justify-content: space-between;
   align-items: center;
   gap: 16rpx;
-  padding: 2rpx 6rpx 18rpx;
+  padding: 0 6rpx 12rpx;
   font-size: 24rpx;
   color: var(--text-secondary);
   flex-shrink: 0;
 }
 
 .stats-text {
-  font-size: 28rpx;
+  font-size: 26rpx;
   color: var(--text-secondary);
+  line-height: 1.35;
 }
 
 .highlight-count-small {
-  color: #D98933;
+  color: #D4814F;
   font-weight: 700;
-  font-size: 34rpx;
+  font-size: 32rpx;
 }
 
 .map-link {
-  color: var(--color-primary);
+  color: var(--text-secondary);
   font-size: 24rpx;
-  font-weight: 600;
+  font-weight: 500;
+  padding: 8rpx 0;
 }
 
 .map-panel {
@@ -75,7 +77,8 @@
   min-height: 400rpx;
   border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 4rpx 16rpx rgba(52, 42, 36, 0.04);
+  border: 1rpx solid rgba(230, 217, 203, 0.52);
 }
 
 .bottom-panel {
@@ -85,22 +88,22 @@
   bottom: 0;
   display: flex;
   flex-direction: column;
-  background: rgba(255, 253, 249, 0.98);
+  background: rgba(255, 253, 249, 0.985);
   border-top-left-radius: 32rpx;
   border-top-right-radius: 32rpx;
-  box-shadow: var(--shadow-floating);
+  box-shadow: 0 -6rpx 16rpx rgba(52, 42, 36, 0.06);
   z-index: 50;
   overflow: hidden;
   backdrop-filter: blur(14rpx);
   box-sizing: border-box;
-  padding-bottom: 100rpx;
+  padding-bottom: 24rpx;
 }
 
 .drag-handle {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 16rpx 0 12rpx;
+  padding: 14rpx 0 10rpx;
   flex-shrink: 0;
 }
 
@@ -123,15 +126,15 @@
 .current-store-card {
   background: var(--bg-card);
   border: 1rpx solid var(--line-soft);
-  border-radius: 30rpx;
+  border-radius: 28rpx;
   padding: 24rpx;
-  box-shadow: 0 10rpx 28rpx rgba(52, 42, 36, 0.06);
+  box-shadow: 0 6rpx 16rpx rgba(52, 42, 36, 0.045);
 }
 
 .current-store-card-compact {
   padding: 18rpx 20rpx;
   border-radius: 26rpx;
-  box-shadow: 0 8rpx 22rpx rgba(52, 42, 36, 0.05);
+  box-shadow: 0 4rpx 12rpx rgba(52, 42, 36, 0.04);
 }
 
 .current-store-card-compact .card-header {
@@ -188,7 +191,7 @@
   flex: 1;
   min-width: 0;
   font-size: 34rpx;
-  line-height: 1.3;
+  line-height: 1.28;
   font-weight: 700;
   color: var(--text-primary);
 }
@@ -199,12 +202,12 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 62rpx;
-  padding: 0 20rpx;
-  font-size: 28rpx;
+  min-height: 56rpx;
+  padding: 0 18rpx;
+  font-size: 25rpx;
   font-weight: 700;
   line-height: 1;
-  box-shadow: 0 10rpx 22rpx rgba(217, 124, 98, 0.16);
+  box-shadow: none;
 }
 
 .card-body {
@@ -217,7 +220,7 @@
   align-items: center;
   gap: 12rpx;
   flex-wrap: wrap;
-  margin-top: 4rpx;
+  margin-top: 2rpx;
   line-height: 1.4;
 }
 
@@ -231,18 +234,18 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0 14rpx;
-  min-height: 42rpx;
+  padding: 0 12rpx;
+  min-height: 40rpx;
   border-radius: var(--radius-pill);
-  background: rgba(217, 124, 98, 0.1);
-  color: var(--color-primary);
-  font-size: 22rpx;
+  background: rgba(217, 124, 98, 0.08);
+  color: #B86A59;
+  font-size: 21rpx;
   font-weight: 600;
   line-height: 1;
 }
 
 .tag-row {
-  margin-top: 12rpx;
+  margin-top: 10rpx;
 }
 
 .tag-label {
@@ -253,10 +256,11 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   line-height: 1.2;
+  background: rgba(241, 232, 221, 0.8);
 }
 
 .address-row {
-  margin-top: 12rpx;
+  margin-top: 10rpx;
   font-size: 24rpx;
   line-height: 1.5;
   color: var(--text-secondary);
@@ -270,8 +274,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16rpx;
-  margin-top: 18rpx;
+  gap: 12rpx;
+  margin-top: 16rpx;
   min-height: 88rpx;
 }
 
@@ -283,22 +287,26 @@
 .remove-link {
   display: inline-flex;
   align-items: center;
+  justify-content: flex-end;
   flex-shrink: 0;
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
   font-size: 24rpx;
-  line-height: 1.3;
+  line-height: 1.25;
   min-height: 88rpx;
+  padding: 0 6rpx;
+  white-space: nowrap;
 }
 
 .pull-up-hint {
   display: flex;
   justify-content: center;
-  padding: 10rpx 0 14rpx;
+  padding: 6rpx 0 8rpx;
 }
 
 .hint-text {
   font-size: 22rpx;
   color: var(--text-tertiary);
+  line-height: 1.2;
 }
 
 .nearby-section {
@@ -309,7 +317,7 @@
 }
 
 .nearby-header {
-  padding: 16rpx 24rpx 12rpx;
+  padding: 12rpx 24rpx 8rpx;
   border-top: 1rpx solid var(--line-soft);
   flex-shrink: 0;
 }
@@ -318,7 +326,6 @@
   font-size: 28rpx;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 4rpx;
 }
 
 .nearby-hint {
@@ -330,7 +337,7 @@
   flex: 1;
   min-height: 340rpx;
   height: 400rpx;
-  padding: 0 24rpx 6rpx;
+  padding: 0 24rpx 8rpx;
   box-sizing: border-box;
 }
 
@@ -339,7 +346,7 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 14rpx;
-  padding: 18rpx 0;
+  padding: 15rpx 0;
   border-bottom: 1rpx solid var(--line-soft);
 }
 
@@ -353,11 +360,11 @@
 }
 
 .nearby-name {
-  font-size: 28rpx;
+  font-size: 27rpx;
   font-weight: 600;
-  line-height: 1.35;
+  line-height: 1.32;
   color: var(--text-primary);
-  margin-bottom: 6rpx;
+  margin-bottom: 4rpx;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -390,12 +397,12 @@
 }
 
 .nearby-tags {
-  max-width: 170rpx;
+  max-width: 168rpx;
   font-size: 22rpx;
   line-height: 1.4;
   color: var(--text-tertiary);
   text-align: right;
-  padding-top: 2rpx;
+  padding-top: 1rpx;
 }
 
 .nearby-empty {
@@ -437,7 +444,7 @@
   width: 34rpx;
   height: 34rpx;
   border-radius: 50%;
-  background: var(--accent-primary);
+  background: var(--color-primary);
 }
 
 .empty-title {
