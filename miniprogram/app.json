@@ -7,15 +7,15 @@
   ],
   "window": {
     "navigationBarTitleText": "美食地图助手",
-    "navigationBarBackgroundColor": "#FFF9F1",
+    "navigationBarBackgroundColor": "#F7F2EA",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#F6F1E8",
+    "backgroundColor": "#F7F2EA",
     "backgroundTextStyle": "dark"
   },
   "tabBar": {
-    "color": "#6D655F",
-    "selectedColor": "#1F1A17",
-    "backgroundColor": "#FFF9F1",
+    "color": "#7A6A5C",
+    "selectedColor": "#342A24",
+    "backgroundColor": "#FFFDF9",
     "borderStyle": "black",
     "list": [
       {

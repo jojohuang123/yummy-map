@@ -10,6 +10,7 @@ App({
     },
     currentImportDraft: null,
     currentPreviewResult: null,
-    focusFavoriteId: ""
+    focusFavoriteId: "",
+    pendingImportFocus: null
   }
 });

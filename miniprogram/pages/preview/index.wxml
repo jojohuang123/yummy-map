@@ -1,11 +1,11 @@
 <view class="page-shell">
   <view class="page-title">识别结果</view>
-  <view class="page-subtitle">帮你自动提取了可能是商铺的名字。勾选你想导入到地图的心动小店吧！</view>
+  <view class="page-subtitle">先快速筛掉不想留的店，再把值得去的那几家加入地图。</view>
 
   <block wx:if="{{isEnriching}}">
-    <view class="section-card">
-      <view class="section-title">🔍 正在补充信息...</view>
-      <view class="muted-text">已提取 {{rawCandidateCount}} 条候选文本，努力联网查找神仙评分中。</view>
+    <view class="section-card loading-card">
+      <view class="section-title">正在补充门店信息</view>
+      <view class="muted-text">已提取 {{rawCandidateCount}} 条候选文本，评分和地址正在补齐。</view>
     </view>
   </block>
 
@@ -24,10 +24,20 @@
     </view>
   </view>
 
+  <view class="section-card filter-card">
+    <view class="filter-row">
+      <block wx:for="{{filters}}" wx:key="id">
+        <view
+          class="chip {{item.id === filterType ? 'chip-active' : ''}}"
+          data-filter="{{item.id}}"
+          bindtap="handleFilterChange"
+        >
+          {{item.label}}
+        </view>
+      </block>
+    </view>
 
-
-  <view class="section-card">
-    <view class="chip-row">
+    <view class="chip-row action-row">
       <view class="chip action-chip" bindtap="handleSelectAll">一键全选</view>
       <view class="chip action-chip" bindtap="handleSelectNone">全不选</view>
     </view>
@@ -36,42 +46,51 @@
   <block wx:if="{{!isEnriching && !items.length}}">
     <view class="section-card empty-card">
       <view class="empty-title">当前筛选下没有门店</view>
-      <view class="muted-text">可以切换一下上方的评分过滤条件。</view>
+      <view class="muted-text">换一个评分范围看看，或者直接查看全部结果。</view>
     </view>
   </block>
 
-  <block wx:for="{{items}}" wx:key="id">
-    <view class="section-card item-card {{item.cardClass}}">
-      <view class="card-header" data-id="{{item.id}}" bindtap="handleToggle">
-        <block wx:if="{{item.matchStatus === 'matched'}}">
-          <view class="checkbox {{item.selected ? 'checkbox-checked' : ''}}">
-            <text wx:if="{{item.selected}}">✓</text>
-          </view>
-        </block>
-        <block wx:else>
-          <view class="checkbox checkbox-disabled"></view>
-        </block>
-
-        <view class="card-title-group">
-          <view class="item-name">{{item.poiName}}</view>
-          <view class="muted-text">来源词：{{item.inputName}}</view>
-        </view>
-
-        <!-- 评分徽章化 -->
-        <block wx:if="{{item.matchStatus === 'matched'}}">
-          <view class="rating-badge {{item.ratingClass}}">
-            <text wx:if="{{item.rating}}">⭐ {{item.rating}}</text>
-            <text wx:else>{{item.ratingLabel}}</text>
-          </view>
-        </block>
-      </view>
-
-      <view class="detail-row">
-        <text class="tag-label">{{item.topTagsLabel}}</text>
-        <text class="cost-label">人均 {{item.costLabel}}</text>
-      </view>
-      <view class="detail-address">📍 {{item.addressLabel}}</view>
+  <block wx:for="{{groups}}" wx:key="id">
+    <view class="group-header">
+      <view class="group-title">{{item.title}}</view>
+      <view class="group-hint" wx:if="{{item.hint}}">{{item.hint}}</view>
     </view>
+
+    <block wx:for="{{item.items}}" wx:key="id" wx:for-item="shop">
+      <view class="section-card item-card {{shop.cardClass}}">
+        <view class="card-shell" data-id="{{shop.id}}" bindtap="handleToggle">
+          <block wx:if="{{shop.isMatched}}">
+            <view class="checkbox {{shop.selected ? 'checkbox-checked' : ''}}">
+              <text wx:if="{{shop.selected}}">✓</text>
+            </view>
+          </block>
+          <block wx:else>
+            <view class="checkbox checkbox-disabled"></view>
+          </block>
+
+          <view class="card-main">
+            <view class="title-row">
+              <view class="item-name">{{shop.poiName}}</view>
+
+              <block wx:if="{{shop.isMatched}}">
+                <view class="rating-badge {{shop.ratingClass}}">{{shop.ratingBadgeText}}</view>
+              </block>
+            </view>
+
+            <view class="meta-row">
+              <text class="cost-label">人均 {{shop.costLabel}}</text>
+            </view>
+
+            <view class="tag-row" wx:if="{{shop.showTag}}">
+              <text class="tag-label">{{shop.tagText}}</text>
+            </view>
+
+            <view class="detail-address">{{shop.addressLabel}}</view>
+            <view class="source-text">{{shop.sourceLabel}}</view>
+          </view>
+        </view>
+      </view>
+    </block>
   </block>
 
   <view class="footer-bar">

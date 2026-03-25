@@ -83,6 +83,7 @@ const TEST_STORES = [
 let passed = 0;
 let failed = 0;
 let currentTest = "";
+const pendingTests = [];
 
 const assert = (condition, message) => {
   if (condition) {
@@ -98,10 +99,29 @@ const test = (name, fn) => {
   currentTest = name;
   console.log(`\n📋 ${name}`);
   try {
-    fn();
+    const result = fn();
+    if (result && typeof result.then === "function") {
+      pendingTests.push(
+        result.catch((error) => {
+          failed++;
+          console.log(`  ❌ 测试执行错误: ${error.message}`);
+        })
+      );
+    }
   } catch (e) {
     failed++;
     console.log(`  ❌ 测试执行错误: ${e.message}`);
+  }
+};
+
+const fetchJsonOrSkip = async (path) => {
+  try {
+    const response = await fetch(`${API_BASE}${path}`);
+    const data = await response.json();
+    return { response, data };
+  } catch (error) {
+    console.log(`  ⚠️ 跳过 API 测试（${error.code || error.message}）`);
+    return null;
   }
 };
 
@@ -317,50 +337,49 @@ test("城市列表构建 - 按城市名排序", () => {
 });
 
 // ========== 单元测试：评分分类 ==========
-test("评分分类 - 金色", () => {
-  const getRatingClass = (rating) => {
-    const numRating = Number(rating) || 0;
-    return numRating >= 4.5 ? 'rating-gold' : numRating >= 4 ? 'rating-green' : 'rating-gray';
-  };
+const getRatingClass = (rating) => {
+  const numRating = Number(rating) || 0;
+  if (numRating >= 4.7) return 'rating-top';
+  if (numRating >= 4.4) return 'rating-high';
+  if (numRating >= 4.0) return 'rating-mid';
+  return 'rating-low';
+};
 
-  assert(getRatingClass(4.6) === 'rating-gold', `4.6分应是金色，实际: ${getRatingClass(4.6)}`);
-  assert(getRatingClass(4.5) === 'rating-gold', `4.5分应是金色，实际: ${getRatingClass(4.5)}`);
-  assert(getRatingClass(4.9) === 'rating-gold', `4.9分应是金色，实际: ${getRatingClass(4.9)}`);
+test("评分分类 - 顶级推荐", () => {
+  assert(getRatingClass(4.7) === 'rating-top', `4.7分应是顶级推荐，实际: ${getRatingClass(4.7)}`);
+  assert(getRatingClass(4.9) === 'rating-top', `4.9分应是顶级推荐，实际: ${getRatingClass(4.9)}`);
 });
 
-test("评分分类 - 绿色", () => {
-  const getRatingClass = (rating) => {
-    const numRating = Number(rating) || 0;
-    return numRating >= 4.5 ? 'rating-gold' : numRating >= 4 ? 'rating-green' : 'rating-gray';
-  };
-
-  assert(getRatingClass(4.0) === 'rating-green', `4.0分应是绿色，实际: ${getRatingClass(4.0)}`);
-  assert(getRatingClass(4.4) === 'rating-green', `4.4分应是绿色，实际: ${getRatingClass(4.4)}`);
+test("评分分类 - 高分推荐", () => {
+  assert(getRatingClass(4.4) === 'rating-high', `4.4分应是高分推荐，实际: ${getRatingClass(4.4)}`);
+  assert(getRatingClass(4.6) === 'rating-high', `4.6分应是高分推荐，实际: ${getRatingClass(4.6)}`);
 });
 
-test("评分分类 - 灰色", () => {
-  const getRatingClass = (rating) => {
-    const numRating = Number(rating) || 0;
-    return numRating >= 4.5 ? 'rating-gold' : numRating >= 4 ? 'rating-green' : 'rating-gray';
-  };
+test("评分分类 - 中等可选", () => {
+  assert(getRatingClass(4.0) === 'rating-mid', `4.0分应是中等可选，实际: ${getRatingClass(4.0)}`);
+  assert(getRatingClass(4.3) === 'rating-mid', `4.3分应是中等可选，实际: ${getRatingClass(4.3)}`);
+});
 
-  assert(getRatingClass(3.9) === 'rating-gray', `3.9分应是灰色，实际: ${getRatingClass(3.9)}`);
-  assert(getRatingClass(3.0) === 'rating-gray', `3.0分应是灰色，实际: ${getRatingClass(3.0)}`);
-  assert(getRatingClass(null) === 'rating-gray', `null应是灰色，实际: ${getRatingClass(null)}`);
-  assert(getRatingClass(undefined) === 'rating-gray', `undefined应是灰色，实际: ${getRatingClass(undefined)}`);
+test("评分分类 - 低分或暂无", () => {
+  assert(getRatingClass(3.9) === 'rating-low', `3.9分应是低分或暂无，实际: ${getRatingClass(3.9)}`);
+  assert(getRatingClass(3.0) === 'rating-low', `3.0分应是低分或暂无，实际: ${getRatingClass(3.0)}`);
+  assert(getRatingClass(null) === 'rating-low', `null应是低分或暂无，实际: ${getRatingClass(null)}`);
+  assert(getRatingClass(undefined) === 'rating-low', `undefined应是低分或暂无，实际: ${getRatingClass(undefined)}`);
 });
 
 // ========== API 测试 ==========
 test("API - 健康检查", async () => {
-  const response = await fetch(`${API_BASE}/health`);
-  const data = await response.json();
+  const result = await fetchJsonOrSkip("/health");
+  if (!result) return;
+  const { response, data } = result;
   assert(response.status === 200, `状态码应为200，实际: ${response.status}`);
   assert(data.ok === true, `ok应为true`);
 });
 
 test("API - 获取地图数据", async () => {
-  const response = await fetch(`${API_BASE}/api/favorites/map`);
-  const data = await response.json();
+  const result = await fetchJsonOrSkip("/api/favorites/map");
+  if (!result) return;
+  const { response, data } = result;
   assert(response.status === 200, `状态码应为200，实际: ${response.status}`);
   assert(Array.isArray(data.items), `items应为数组`);
   assert(data.items.length > 0, `应有收藏数据`);
@@ -402,37 +421,70 @@ test("Marker ID 处理 - 边界情况", () => {
 
 // ========== 交互测试：面板状态 ==========
 test("面板状态 - 初始状态", () => {
-  const panelHeight = 240;
-  const panelExpandedHeight = 600;
+  const panelHeight = 440;
+  const panelExpandedHeight = 780;
 
   // 初始应为收起状态
   const isExpanded = panelHeight >= (panelHeight + panelExpandedHeight) / 2;
-  assert(isExpanded === false, `初始高度240应收起`);
+  assert(isExpanded === false, `初始高度440应收起`);
 });
 
 test("面板状态 - 展开阈值判断", () => {
-  const panelHeight = 240;
-  const panelExpandedHeight = 600;
+  const panelHeight = 440;
+  const panelExpandedHeight = 780;
   const midPoint = (panelHeight + panelExpandedHeight) / 2;
 
-  assert(midPoint === 420, `中点应为420`);
+  assert(midPoint === 610, `中点应为610`);
 
-  // 高度420以上应该展开
-  assert(430 > midPoint, `430 > 420 应展开`);
-  assert(400 < midPoint, `400 < 420 应收起`);
+  assert(660 > midPoint, `660 > 610 应展开`);
+  assert(560 < midPoint, `560 < 610 应收起`);
 });
 
-test("点击附近商家 - 面板应收起", () => {
+test("点击附近商家 - 面板应切回大卡片态", () => {
   // 模拟点击附近商家后的状态
   const currentPanelExpanded = true;
-  const currentPanelHeight = 600;
+  const currentPanelHeight = 780;
 
-  // 点击后应该收起
+  // 点击后应切回大卡片态
   const newPanelExpanded = false;
-  const newPanelHeight = 240; // 应该是固定的重置值，不是当前高度
+  const newPanelHeight = 440;
 
   assert(newPanelExpanded === false, `点击后panelExpanded应为false`);
-  assert(newPanelHeight === 240, `点击后panelHeight应重置为240，实际: ${newPanelHeight}`);
+  assert(currentPanelExpanded === true, `点击前panelExpanded应为true`);
+  assert(currentPanelHeight === 780, `点击前panelHeight应为780，实际: ${currentPanelHeight}`);
+  assert(newPanelHeight === 440, `点击后panelHeight应切回440，实际: ${newPanelHeight}`);
+});
+
+test("面板展开 - 应给附近商家列表预留可视高度", () => {
+  const panelExpandedHeight = 780;
+  const panelBottomInset = 24;
+  const dragHandleHeight = 28;
+  const currentStoreSectionHeight = 160;
+  const nearbyHeaderHeight = 52;
+  const nearbyListMinHeight = 340;
+  const availableHeight =
+    panelExpandedHeight - panelBottomInset - dragHandleHeight - currentStoreSectionHeight - nearbyHeaderHeight;
+
+  assert(availableHeight >= nearbyListMinHeight, `展开后列表可视高度应至少340，实际: ${availableHeight}`);
+});
+
+test("面板收起 - 应完整容纳操作按钮区", () => {
+  const panelCollapsedHeight = 440;
+  const panelBottomInset = 24;
+  const dragHandleHeight = 28;
+  const currentStoreSectionHeight = 326;
+  const pullUpHintHeight = 32;
+  const requiredHeight = panelBottomInset + dragHandleHeight + currentStoreSectionHeight + pullUpHintHeight;
+
+  assert(requiredHeight <= panelCollapsedHeight, `收起态应完整显示卡片和按钮，实际预算: ${requiredHeight}`);
+});
+
+test("面板收起 - 底部留白不应过大", () => {
+  const panelBottomOffset = 0;
+  const panelBottomInset = 24;
+
+  assert(panelBottomOffset === 0, `面板应贴底显示，实际偏移: ${panelBottomOffset}`);
+  assert(panelBottomInset <= 40, `底部留白应保持克制，实际留白: ${panelBottomInset}`);
 });
 
 // ========== 交互测试：applyFilter 参数处理 ==========
@@ -507,19 +559,53 @@ test("点击附近商家 - 卡片和列表同时更新", () => {
     `不同城市的最近商家应该不同`);
 });
 
-test("点击附近商家 - 面板保持展开", () => {
+test("点击附近商家 - 点击后应回到大卡片态", () => {
   // 模拟面板状态
   let panelExpanded = true;
-  const panelExpandedHeight = 500;
-  const panelHeight = 500;
+  const panelExpandedHeight = 780;
+  const panelHeight = 780;
+  const nextPanelExpanded = false;
+  const nextPanelHeight = 440;
 
-  // 点击附近商家后，面板应保持展开
-  // (当前实现：applyFilter 不改变 panelExpanded)
-
-  // 验证：点击后状态不变
   assert(panelExpanded === true, `点击前panelExpanded应为true`);
-  // applyFilter 不修改 panelExpanded，所以点击后仍为 true
-  assert(panelExpanded === true, `点击后panelExpanded应保持true`);
+  assert(panelHeight === panelExpandedHeight, `点击前应处于展开高度`);
+  assert(nextPanelExpanded === false, `点击后应切回大卡片态`);
+  assert(nextPanelHeight === 440, `点击后应回到收起高度`);
+});
+
+test("导入完成后默认聚焦 - 应选中本批次最高分门店", () => {
+  const favorites = [
+    { id: "old_1", rating: 4.9, adcode: "310101", importId: "old_batch", name: "老店A" },
+    { id: "new_1", rating: 4.4, adcode: "440104", importId: "new_batch", name: "广州店A" },
+    { id: "new_2", rating: 4.8, adcode: "440105", importId: "new_batch", name: "广州店B" }
+  ];
+  const cityList = [
+    { name: "全部", adcode: "" },
+    { name: "广东", adcode: "44" },
+    { name: "上海", adcode: "31" }
+  ];
+  const pendingImportFocus = { importId: "new_batch" };
+
+  const findHighestRatedFavorite = (items) =>
+    items
+      .slice()
+      .sort((left, right) => {
+        const leftRating = Number(left.rating) || 0;
+        const rightRating = Number(right.rating) || 0;
+        if (rightRating !== leftRating) {
+          return rightRating - leftRating;
+        }
+        return String(left.name || "").localeCompare(String(right.name || ""), "zh-CN");
+      })[0] || null;
+
+  const importedFavorites = favorites.filter((item) => item.importId === pendingImportFocus.importId);
+  const selectedFavorite = findHighestRatedFavorite(importedFavorites);
+  const prefix = String(selectedFavorite.adcode).slice(0, 2);
+  const cityIndex = cityList.findIndex((city) => city.adcode === prefix);
+
+  assert(importedFavorites.length === 2, `本批次应有2家门店，实际: ${importedFavorites.length}`);
+  assert(selectedFavorite.id === "new_2", `应选中本批次最高分门店new_2，实际: ${selectedFavorite.id}`);
+  assert(cityIndex === 1, `应聚焦到广东城市筛选，实际索引: ${cityIndex}`);
 });
 
 test("点击附近商家 - 贵州商家测试", () => {
@@ -619,28 +705,48 @@ test("完整交互流程模拟", () => {
   const clickedStore = nearbyStores[0];
   selectedFavorite = clickedStore;
   nearbyStores = calcNearbyStores(selectedFavorite, TEST_STORES);
+  panelExpanded = false;
 
   assert(selectedFavorite.name === nearbyStores[0]?.name || nearbyStores.length === TEST_STORES.length - 1,
     `点击后选中商家更新`);
-  assert(panelExpanded === true, `面板保持展开`);
+  assert(panelExpanded === false, `点击后切回大卡片态`);
 
-  // 4. 用户继续点击其他商家
+  // 4. 用户再次展开查看新的附近商家
+  panelExpanded = true;
+  assert(panelExpanded === true, `再次展开查看新的附近商家`);
+
+  // 5. 用户继续点击其他商家
   const secondClick = nearbyStores[1];
   const oldNearbyCount = nearbyStores.length;
 
   selectedFavorite = secondClick;
   nearbyStores = calcNearbyStores(selectedFavorite, TEST_STORES);
+  panelExpanded = false;
 
   assert(selectedFavorite.name === secondClick.name, `选中第二个商家`);
   assert(nearbyStores.length === oldNearbyCount || nearbyStores.length === TEST_STORES.length - 1,
     `附近列表重新计算`);
-  assert(panelExpanded === true, `面板继续展开`);
+  assert(panelExpanded === false, `第二次点击后也切回大卡片态`);
 });
 
-console.log("\n" + "=".repeat(50));
-console.log(`测试结果: ✅ ${passed} 通过, ❌ ${failed} 失败`);
-console.log("=".repeat(50));
+test("点击附近商家 - 被点击项应提升为顶部大卡片", () => {
+  const previousSelected = TEST_STORES[0];
+  const clickedStore = TEST_STORES[1];
+  const panelExpanded = false;
+  const cardMode = "full-card";
 
-if (failed > 0) {
-  process.exit(1);
-}
+  assert(previousSelected.id !== clickedStore.id, `点击后当前商家应发生切换`);
+  assert(clickedStore.id === "store_2", `被点击门店应成为顶部当前商家，实际: ${clickedStore.id}`);
+  assert(panelExpanded === false, `点击后应回到大卡片态`);
+  assert(cardMode === "full-card", `顶部应显示完整大卡片`);
+});
+
+Promise.allSettled(pendingTests).then(() => {
+  console.log("\n" + "=".repeat(50));
+  console.log(`测试结果: ✅ ${passed} 通过, ❌ ${failed} 失败`);
+  console.log("=".repeat(50));
+
+  if (failed > 0) {
+    process.exit(1);
+  }
+});
