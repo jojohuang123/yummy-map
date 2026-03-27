@@ -1,0 +1,15 @@
+[Unit]
+Description=Yummy Map API
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/srv/yummy-map/server
+ExecStart=/usr/bin/node --env-file=.env src/index.js
+Restart=always
+RestartSec=5
+User=root
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
