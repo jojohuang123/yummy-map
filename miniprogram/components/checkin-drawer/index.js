@@ -190,16 +190,19 @@ Component({
     },
 
     _extractCity(favorite) {
-      if (favorite.businessArea) return favorite.businessArea;
+      // 只有当 businessArea 是非空字符串时才使用
+      if (typeof favorite.businessArea === 'string' && favorite.businessArea) {
+        return favorite.businessArea;
+      }
+      // 用 adcode 前4位映射城市
       if (favorite.adcode) {
-        const prefix = String(favorite.adcode).slice(0, 2);
+        const prefix = String(favorite.adcode).slice(0, 4);
         const cityMap = {
-          "11": "北京", "12": "天津", "31": "上海", "32": "江苏",
-          "33": "浙江", "35": "福建", "36": "江西", "37": "山东",
-          "41": "河南", "42": "湖北", "43": "湖南", "44": "广东",
-          "45": "广西", "46": "海南", "50": "重庆", "51": "四川",
-          "52": "贵州", "53": "云南", "61": "陕西", "62": "甘肃",
-          "63": "青海", "64": "宁夏", "65": "新疆"
+          "4418": "清远", "4413": "广州", "4419": "东莞", "4420": "中山",
+          "3100": "上海", "3302": "宁波", "3301": "杭州", "3305": "温州",
+          "3205": "苏州", "3201": "南京", "3202": "无锡", "3203": "常州",
+          "4401": "深圳", "4403": "深圳", "4406": "珠海", "4407": "佛山",
+          "1100": "北京", "1200": "天津", "5000": "重庆", "5101": "成都"
         };
         return cityMap[prefix] || "";
       }

@@ -20,28 +20,6 @@
     </view>
   </view>
 
-  <view class="cities-section" wx:if="{{stats.cities.length > 0}}">
-    <view class="section-header">
-      <text class="section-title">🗺️ 打卡足迹</text>
-    </view>
-    <view class="cities-visual">
-      <view class="cities-dots">
-        <view class="city-dot" wx:for="{{cityDots}}" wx:key="index" style="left: {{item.left}}%; top: {{item.top}}%"></view>
-      </view>
-    </view>
-    <view class="cities-tags">
-      <view
-        class="city-tag {{selectedCity === item.name ? 'city-tag-selected' : ''}}"
-        wx:for="{{cityList}}"
-        wx:key="value"
-        bindtap="onCitySelect"
-        data-city="{{item.value}}"
-      >
-        {{item.name}} <text class="city-count" wx:if="{{item.cityCount > 0}}">{{item.cityCount}}</text>
-      </view>
-    </view>
-  </view>
-
   <view class="checkins-section">
     <view class="section-header">
       <text class="section-title">📋 已打卡店铺</text>

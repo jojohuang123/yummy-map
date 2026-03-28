@@ -91,11 +91,6 @@ Page({
         ...stats.cities.map((c) => ({ name: c.name, value: c.name, cityCount: c.count }))
       ];
 
-      const cityDots = stats.cities.map((c, index) => ({
-        left: 20 + (index * 25) % 60,
-        top: 30 + Math.floor(index / 3) * 30
-      }));
-
       const categoryList = [
         { name: "全部", value: "" },
         ...stats.categories.map((c) => ({
@@ -116,7 +111,6 @@ Page({
           totalPages: 0
         },
         cityList,
-        cityDots,
         categoryList
       });
     } catch (err) {
