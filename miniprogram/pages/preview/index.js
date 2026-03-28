@@ -139,6 +139,12 @@ Page({
     });
   },
 
+  getSelectableItemIds(filterType = this.data.filterType) {
+    return this.getVisibleItems(this.data.allItems, filterType)
+      .filter((item) => item.isMatched)
+      .map((item) => item.id);
+  },
+
   buildGroups(items, filterType) {
     const matchedItems = items.filter((item) => item.isMatched);
     const filteredItems = items.filter((item) => !item.isMatched);
@@ -232,14 +238,20 @@ Page({
   },
 
   handleSelectAll() {
-    const nextItems = this.data.allItems.map((item) =>
-      Object.assign({}, item, { selected: item.matchStatus === "matched" })
-    );
+    const selectableIds = new Set(this.getSelectableItemIds());
+    const nextItems = this.data.allItems.map((item) => {
+      if (!selectableIds.has(item.id)) return item;
+      return Object.assign({}, item, { selected: true });
+    });
     this.updateSummary(nextItems);
   },
 
   handleSelectNone() {
-    const nextItems = this.data.allItems.map((item) => Object.assign({}, item, { selected: false }));
+    const selectableIds = new Set(this.getSelectableItemIds());
+    const nextItems = this.data.allItems.map((item) => {
+      if (!selectableIds.has(item.id)) return item;
+      return Object.assign({}, item, { selected: false });
+    });
     this.updateSummary(nextItems);
   },
 

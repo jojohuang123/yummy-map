@@ -113,6 +113,33 @@ const buildGroups = (items, filterType) => {
   return groups;
 };
 
+const getVisibleItems = (items, filterType) => {
+  if (filterType === "all") return items;
+
+  return items.filter((item) => {
+    if (!item.isMatched) return false;
+
+    const rating = Number(item.rating) || 0;
+    if (filterType === "4.5+") return rating >= 4.5;
+    if (filterType === "4.0-4.4") return rating >= 4.0 && rating < 4.5;
+    if (filterType === "<4.0") return rating < 4.0;
+    return true;
+  });
+};
+
+const applyScopedSelection = (items, filterType, nextSelected) => {
+  const selectableIds = new Set(
+    getVisibleItems(items, filterType)
+      .filter((item) => item.isMatched)
+      .map((item) => item.id)
+  );
+
+  return items.map((item) => {
+    if (!selectableIds.has(item.id)) return item;
+    return Object.assign({}, item, { selected: nextSelected });
+  });
+};
+
 test("预览排序 - 可导入项应排在前面", () => {
   const items = decorateItems(TEST_ITEMS);
   assert(items[0].id === "matched_2", `最高分可导入项应在最前，实际: ${items[0].id}`);
@@ -141,6 +168,29 @@ test("评分文案 - 应明确带星标", () => {
   const item = items.find((entry) => entry.id === "matched_1");
   assert(item.ratingBadgeText === "★ 4.4", `评分文案应为★ 4.4，实际: ${item.ratingBadgeText}`);
   assert(item.ratingClass === "rating-high", `4.4分应进入高分档，实际: ${item.ratingClass}`);
+});
+
+test("批量选择 - 一键全选只应作用于当前筛选结果", () => {
+  const items = decorateItems(
+    TEST_ITEMS.map((item) => Object.assign({}, item, { selected: false }))
+  );
+  const nextItems = applyScopedSelection(items, "4.5+", true);
+
+  const selectedIds = nextItems.filter((item) => item.selected).map((item) => item.id);
+  assert(selectedIds.length === 1, `4.5+筛选下只应选中1项，实际: ${selectedIds.length}`);
+  assert(selectedIds[0] === "matched_2", `4.5+筛选下应只选中高分项，实际: ${selectedIds.join(",")}`);
+});
+
+test("批量取消 - 全不选只应作用于当前筛选结果", () => {
+  const items = decorateItems(
+    TEST_ITEMS.map((item) => Object.assign({}, item, { selected: item.matchStatus === "matched" }))
+  );
+  const nextItems = applyScopedSelection(items, "4.0-4.4", false);
+
+  const matchedHigh = nextItems.find((item) => item.id === "matched_2");
+  const matchedMid = nextItems.find((item) => item.id === "matched_1");
+  assert(matchedHigh.selected === true, `未落在当前筛选内的高分项应保持选中，实际: ${matchedHigh.selected}`);
+  assert(matchedMid.selected === false, `落在当前筛选内的中分项应被取消选中，实际: ${matchedMid.selected}`);
 });
 
 console.log("\n==================================================");
