@@ -12,6 +12,11 @@
     "backgroundColor": "#F7F2EA",
     "backgroundTextStyle": "dark"
   },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "用于在地图页显示你当前位置，并帮你查看附近收藏的店"
+    }
+  },
   "tabBar": {
     "color": "#7A6A5C",
     "selectedColor": "#342A24",

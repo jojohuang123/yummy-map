@@ -44,6 +44,7 @@ Page({
     cityIndex: 0,
     textValue: "",
     images: [],
+    drawerOpen: false,
     isSubmitting: false,
     stageText: "",
     errorText: "",
@@ -63,6 +64,7 @@ Page({
     const draft = app.globalData.currentImportDraft;
     if (!draft) {
       this.setData({
+        drawerOpen: false,
         textValue: "",
         images: [],
         errorText: ""
@@ -71,6 +73,7 @@ Page({
     }
 
     this.setData({
+      drawerOpen: true,
       cityIndex: this.findCityIndex(draft.cityAdcode),
       textValue: draft.textValue || "",
       images: draft.images || []
@@ -93,6 +96,21 @@ Page({
       textValue: event.detail.value
     });
   },
+
+  handleOpenDrawer() {
+    this.setData({
+      drawerOpen: true
+    });
+  },
+
+  handleCloseDrawer() {
+    if (this.data.isSubmitting) return;
+    this.setData({
+      drawerOpen: false
+    });
+  },
+
+  handleDrawerTap() {},
 
   handleChooseImage() {
     if (this.data.images.length >= 3) {

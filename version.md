@@ -4,8 +4,61 @@
 
 | 版本 | 日期 | 变更摘要 |
 |------|------|----------|
+| [v1.1.1](#v111) | 2026-03-27 | GitHub 快照版本 + 朋友试用部署准备 |
 | [v1.1.0](#v110) | 2026-03-26 | 全链路 UI/UX 收尾优化 + 地图默认聚焦与预览排序升级 |
 | [v1.0.0](#v100) | 2026-03-22 | 地图页面交互优化 + 可拖动底部面板 |
+
+---
+
+## v1.1.1 (2026-03-27)
+
+### 变更类型
+发布快照 + 部署准备 + 文档补充
+
+### 本次版本说明
+
+- 对应提交：`6e1ec91`
+- 当前 GitHub 快照分支：`origin/codex/2`
+- 这一版是**未继续做导入页新一轮优化前**的稳定快照
+
+### 变更范围
+
+#### 1. 试用版部署材料补齐
+
+- 新增 Nginx 反向代理示例配置：
+  - `deploy/nginx/yummy-map.conf.example`
+- 新增 `systemd` 服务示例配置：
+  - `deploy/systemd/yummy-map.service.example`
+- 新增生产环境变量模板：
+  - `server/.env.production.example`
+
+#### 2. 发布与试用文档补充
+
+- 新增朋友试用 / 面试展示版部署手册：
+  - `docs/plans/2026-03-26-friend-trial-deployment.md`
+- 文档覆盖从服务器购买、域名、Nginx、HTTPS 到小程序正式接口切换的完整链路
+
+#### 3. 小程序发布准备收口
+
+- 更新 `miniprogram/sitemap.json`
+- 为后续小程序上线和外部访问准备基础配置
+
+### 文件变更
+
+```
+deploy/nginx/yummy-map.conf.example
+deploy/systemd/yummy-map.service.example
+docs/plans/2026-03-26-friend-trial-deployment.md
+miniprogram/sitemap.json
+server/.env.production.example
+```
+
+### 版本结论
+
+这一版的重点不是继续改产品界面，而是把项目从“本地可跑”推进到“可发布、可试用、可演示”的状态：
+- GitHub 上已有稳定快照可回退
+- 服务器部署材料已齐
+- 后续 UI 方案可以在这个版本之上继续迭代，不会污染当前基线
 
 ---
 

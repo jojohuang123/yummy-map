@@ -1,82 +1,152 @@
 <view class="page-shell import-shell">
   <view class="import-hero">
     <view class="hero-kicker">Yummy Map</view>
-    <view class="hero-title-stack">
-      <view class="page-title">把想吃的店</view>
-      <view class="page-title accent-title">变成你的私藏地图</view>
+
+    <view class="hero-copy">
+      <view class="page-title">把刷到的好店</view>
+      <view class="page-title accent-title">存成你的美食地图</view>
+      <view class="page-subtitle">评论区、截图、收藏夹里的灵感，先收进来，再慢慢决定哪家先吃。</view>
     </view>
-    <view class="page-subtitle">评论区、截图、笔记里的店，我们替你收好。</view>
-    <view class="hero-chips">
-      <view class="hero-chip">评论区</view>
-      <view class="hero-chip">截图</view>
-      <view class="hero-chip">收藏夹</view>
+
+    <view class="hero-collage">
+      <view class="sticker-card hotpot-card">
+        <view class="sticker-pin"></view>
+        <view class="hotpot-bowl">
+          <view class="hotpot-divider"></view>
+          <view class="hotpot-dot dot-one"></view>
+          <view class="hotpot-dot dot-two"></view>
+          <view class="hotpot-dot dot-three"></view>
+          <view class="hotpot-dot dot-four"></view>
+        </view>
+        <view class="sticker-title">牛油火锅</view>
+        <view class="sticker-note">热乎的，想收藏</view>
+      </view>
+
+      <view class="sticker-card skewer-card">
+        <view class="grill-top"></view>
+        <view class="skewer-row">
+          <view class="skewer-stick">
+            <view class="skewer-cube"></view>
+            <view class="skewer-cube"></view>
+            <view class="skewer-cube"></view>
+          </view>
+          <view class="skewer-stick">
+            <view class="skewer-cube"></view>
+            <view class="skewer-cube"></view>
+            <view class="skewer-cube"></view>
+          </view>
+        </view>
+        <view class="sticker-title">炭火烧鸟</view>
+        <view class="sticker-note">晚点很适合约朋友</view>
+      </view>
+
+      <view class="sticker-card dessert-card">
+        <view class="dessert-top"></view>
+        <view class="dessert-layer layer-middle"></view>
+        <view class="dessert-layer layer-bottom"></view>
+        <view class="berry berry-one"></view>
+        <view class="berry berry-two"></view>
+        <view class="berry berry-three"></view>
+        <view class="sticker-title">草莓甜点</view>
+        <view class="sticker-note">下午路过也想打包</view>
+      </view>
+
+      <view class="floating-tag tag-comment">评论区</view>
+      <view class="floating-tag tag-save">炸鸡</view>
+      <view class="floating-tag tag-map">地图里见</view>
     </view>
   </view>
 
-  <view class="flow-card">
-    <view class="flow-top-strip"></view>
-    <view class="flow-header">
-      <view class="flow-eyebrow">TODAY'S MENU</view>
-      <view class="flow-title">把散落的店名，整理成一张清楚好逛的地图</view>
-      <view class="flow-desc">先选城市，再贴文字或补截图，最后一键整理。</view>
-    </view>
-
-    <view class="flow-step">
-      <view class="step-label">1. 选择城市</view>
-      <picker range="{{cityOptions}}" range-key="name" value="{{cityIndex}}" bindchange="handleCityChange">
-        <view class="picker-value">{{cityOptions[cityIndex].name}} <text class="picker-arrow">▾</text></view>
-      </picker>
-      <view class="muted-text">默认先自动识别，不准时再切换到具体城市重试。</view>
-    </view>
-
-    <view class="flow-step">
-      <view class="step-label">2. 粘贴店名</view>
-      <textarea
-        class="text-area"
-        placeholder="例如视频简介、评论区、笔记里提到的多家店名"
-        value="{{textValue}}"
-        bindinput="handleTextInput"
-        maxlength="-1"
-      />
-    </view>
-
-    <view class="flow-bridge">或补几张截图，一起识别</view>
-
-    <view class="flow-step">
-      <view class="step-label">3. 上传截图（可选，最多 3 张）</view>
-      <view class="image-grid">
-        <block wx:for="{{images}}" wx:key="tempFilePath">
-          <view class="image-slot filled-slot">
-            <image class="preview-image" src="{{item.tempFilePath}}" mode="aspectFill" />
-            <button class="remove-button" data-index="{{index}}" bindtap="handleRemoveImage">移除</button>
-          </view>
-        </block>
-        <block wx:if="{{images.length < 3}}">
-          <view class="image-slot upload-slot" bindtap="handleChooseImage">
-            <view class="upload-plus">+</view>
-            <view class="upload-text">添加截图</view>
-          </view>
-        </block>
+  <view class="entry-card">
+    <view class="entry-copy">
+      <view class="entry-title">开始导入</view>
+      <view class="entry-desc">支持粘贴店名、上传截图，先收灵感，再整理成地图。</view>
+      <view class="entry-tags">
+        <view class="entry-tag">文字</view>
+        <view class="entry-tag">截图</view>
+        <view class="entry-tag">自动识别城市</view>
       </view>
-      <view class="muted-text">适合评论区截图、外卖页截图或收藏夹截图。</view>
     </view>
-
-    <block wx:if="{{stageText}}">
-      <view class="inline-status inline-status-warm">
-        <view class="inline-status-title">处理中</view>
-        <view class="muted-text">{{stageText}}</view>
+    <button class="entry-button" bindtap="handleOpenDrawer">
+      <view class="entry-button-inner">
+        <view class="entry-button-text">导入店铺</view>
+        <view class="entry-button-arrow">↗</view>
       </view>
-    </block>
-
-    <block wx:if="{{errorText}}">
-      <view class="inline-status inline-status-error">
-        <view class="inline-status-title">提示</view>
-        <view class="error-text">{{errorText}}</view>
-      </view>
-    </block>
-
-    <button class="primary-button flow-submit" loading="{{isSubmitting}}" disabled="{{isSubmitting}}" bindtap="handleSubmit">开始识别</button>
+    </button>
   </view>
 
+  <view class="import-prompt">现在就收一批好店</view>
   <view class="import-map-link text-button text-button-accent" bindtap="handleGoMap">先看看收藏地图</view>
+
+  <view class="drawer-layer {{drawerOpen ? 'drawer-open' : ''}}">
+    <view class="drawer-mask" catchtap="handleCloseDrawer"></view>
+    <view class="drawer-panel" catchtap="handleDrawerTap">
+      <view class="drawer-handle"></view>
+      <view class="drawer-header">
+        <view>
+          <view class="drawer-title">导入店铺</view>
+          <view class="drawer-desc">先选城市，再贴文字或补截图，最后一键整理。</view>
+        </view>
+        <view class="drawer-close" bindtap="handleCloseDrawer">收起</view>
+      </view>
+
+      <scroll-view class="drawer-scroll" scroll-y="true" enable-flex="true">
+        <view class="flow-step">
+          <view class="step-label">1. 选择城市</view>
+          <picker range="{{cityOptions}}" range-key="name" value="{{cityIndex}}" bindchange="handleCityChange">
+            <view class="picker-value">{{cityOptions[cityIndex].name}} <text class="picker-arrow">▾</text></view>
+          </picker>
+          <view class="muted-text">默认先自动识别，不准时再切换到具体城市重试。</view>
+        </view>
+
+        <view class="flow-step">
+          <view class="step-label">2. 粘贴店名</view>
+          <textarea
+            class="text-area"
+            placeholder="例如视频简介、评论区、笔记里提到的多家店名"
+            value="{{textValue}}"
+            bindinput="handleTextInput"
+            maxlength="-1"
+          />
+        </view>
+
+        <view class="flow-bridge">或补几张截图，一起识别</view>
+
+        <view class="flow-step">
+          <view class="step-label">3. 上传截图（可选，最多 3 张）</view>
+          <view class="image-grid">
+            <block wx:for="{{images}}" wx:key="tempFilePath">
+              <view class="image-slot filled-slot">
+                <image class="preview-image" src="{{item.tempFilePath}}" mode="aspectFill" />
+                <button class="remove-button" data-index="{{index}}" bindtap="handleRemoveImage">移除</button>
+              </view>
+            </block>
+            <block wx:if="{{images.length < 3}}">
+              <view class="image-slot upload-slot" bindtap="handleChooseImage">
+                <view class="upload-plus">+</view>
+                <view class="upload-text">添加截图</view>
+              </view>
+            </block>
+          </view>
+          <view class="muted-text">适合评论区截图、外卖页截图或收藏夹截图。</view>
+        </view>
+
+        <block wx:if="{{stageText}}">
+          <view class="inline-status inline-status-warm">
+            <view class="inline-status-title">处理中</view>
+            <view class="muted-text">{{stageText}}</view>
+          </view>
+        </block>
+
+        <block wx:if="{{errorText}}">
+          <view class="inline-status inline-status-error">
+            <view class="inline-status-title">提示</view>
+            <view class="error-text">{{errorText}}</view>
+          </view>
+        </block>
+
+        <button class="primary-button flow-submit" loading="{{isSubmitting}}" disabled="{{isSubmitting}}" bindtap="handleSubmit">开始识别</button>
+      </scroll-view>
+    </view>
+  </view>
 </view>
