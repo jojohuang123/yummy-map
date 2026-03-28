@@ -63,12 +63,6 @@ Page({
   onShow() {
     const draft = app.globalData.currentImportDraft;
     if (!draft) {
-      this.setData({
-        drawerOpen: false,
-        textValue: "",
-        images: [],
-        errorText: ""
-      });
       return;
     }
 
@@ -249,8 +243,10 @@ Page({
         isSubmitting: false,
         stageText: "",
         uploadProgress: "",
+        drawerOpen: false,
         textValue: "",
-        images: []
+        images: [],
+        errorText: ""
       });
 
       wx.navigateTo({
