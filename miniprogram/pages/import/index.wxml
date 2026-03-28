@@ -9,14 +9,25 @@
     </view>
 
     <view class="hero-collage">
+      <view class="collage-warmth warmth-one"></view>
+      <view class="collage-warmth warmth-two"></view>
+
       <view class="sticker-card hotpot-card">
         <view class="sticker-pin"></view>
+        <view class="hotpot-steam steam-one"></view>
+        <view class="hotpot-steam steam-two"></view>
         <view class="hotpot-bowl">
+          <view class="hotpot-soup soup-spicy"></view>
+          <view class="hotpot-soup soup-bone"></view>
+          <view class="hotpot-surface-shine"></view>
           <view class="hotpot-divider"></view>
-          <view class="hotpot-dot dot-one"></view>
-          <view class="hotpot-dot dot-two"></view>
-          <view class="hotpot-dot dot-three"></view>
-          <view class="hotpot-dot dot-four"></view>
+          <view class="hotpot-ingredient chili-one"></view>
+          <view class="hotpot-ingredient chili-two"></view>
+          <view class="hotpot-ingredient tofu-one"></view>
+          <view class="hotpot-ingredient ball-one"></view>
+          <view class="hotpot-ingredient ball-two"></view>
+          <view class="hotpot-ingredient scallion-one"></view>
+          <view class="hotpot-ingredient mushroom-one"></view>
         </view>
         <view class="sticker-title">牛油火锅</view>
         <view class="sticker-note">热乎的，想收藏</view>
@@ -24,6 +35,10 @@
 
       <view class="sticker-card skewer-card">
         <view class="grill-top"></view>
+        <view class="grill-shadow"></view>
+        <view class="grill-glow"></view>
+        <view class="grill-spark spark-one"></view>
+        <view class="grill-spark spark-two"></view>
         <view class="skewer-row">
           <view class="skewer-stick">
             <view class="skewer-cube"></view>
@@ -42,11 +57,16 @@
 
       <view class="sticker-card dessert-card">
         <view class="dessert-top"></view>
+        <view class="dessert-cream cream-one"></view>
+        <view class="dessert-cream cream-two"></view>
         <view class="dessert-layer layer-middle"></view>
         <view class="dessert-layer layer-bottom"></view>
+        <view class="dessert-jam"></view>
         <view class="berry berry-one"></view>
         <view class="berry berry-two"></view>
         <view class="berry berry-three"></view>
+        <view class="dessert-crumb crumb-one"></view>
+        <view class="dessert-crumb crumb-two"></view>
         <view class="sticker-title">草莓甜点</view>
         <view class="sticker-note">下午路过也想打包</view>
       </view>
