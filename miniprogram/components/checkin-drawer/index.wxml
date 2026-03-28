@@ -1,0 +1,163 @@
+<view class="drawer-mask {{showDrawer ? 'drawer-mask-visible' : ''}}" bindtap="onMaskTap"></view>
+
+<view class="drawer-container {{showDrawer ? 'drawer-container-visible' : ''}}">
+  <view
+    class="drawer-drag-handle"
+    bindtouchstart="onDragStart"
+    bindtouchmove="onDragMove"
+    bindtouchend="onDragEnd"
+  >
+    <view class="drawer-drag-indicator"></view>
+  </view>
+
+  <view class="drawer-header">
+    <text class="drawer-title">🍽️ 打卡</text>
+    <view class="drawer-shop-info" wx:if="{{target}}">
+      <text class="drawer-shop-name">{{target.favorite.name}}</text>
+      <text class="drawer-shop-address" wx:if="{{target.favorite.address}}">{{target.favorite.address}}</text>
+    </view>
+  </view>
+
+  <view class="drawer-body">
+    <view class="section">
+      <view class="section-title">这次体验如何？</view>
+      <view class="rating-grid">
+        <view
+          class="rating-btn rating-btn-1 {{rating === 1 ? 'rating-btn-selected' : ''}}"
+          bindtap="onRatingSelect"
+          data-rating="1"
+        >
+          <text class="rating-emoji">😫</text>
+          <text class="rating-label">拉完了</text>
+        </view>
+        <view
+          class="rating-btn rating-btn-2 {{rating === 2 ? 'rating-btn-selected' : ''}}"
+          bindtap="onRatingSelect"
+          data-rating="2"
+        >
+          <text class="rating-emoji">😐</text>
+          <text class="rating-label">NPC</text>
+        </view>
+        <view
+          class="rating-btn rating-btn-3 {{rating === 3 ? 'rating-btn-selected' : ''}}"
+          bindtap="onRatingSelect"
+          data-rating="3"
+        >
+          <text class="rating-emoji">😊</text>
+          <text class="rating-label">人上人</text>
+        </view>
+        <view
+          class="rating-btn rating-btn-4 {{rating === 4 ? 'rating-btn-selected' : ''}}"
+          bindtap="onRatingSelect"
+          data-rating="4"
+        >
+          <text class="rating-emoji">😍</text>
+          <text class="rating-label">顶级</text>
+        </view>
+        <view
+          class="rating-btn rating-btn-5 {{rating === 5 ? 'rating-btn-selected' : ''}}"
+          bindtap="onRatingSelect"
+          data-rating="5"
+        >
+          <text class="rating-emoji">🤩</text>
+          <text class="rating-label">夯</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="section-title">给它分个类吧（选填）</view>
+      <scroll-view class="category-scroll" scroll-x enhanced show-scrollbar="false">
+        <view class="category-tags">
+          <view
+            class="category-tag {{category === 'western' ? 'category-tag-selected' : ''}}"
+            bindtap="onCategorySelect"
+            data-category="western"
+          >西餐</view>
+          <view
+            class="category-tag {{category === 'seasia' ? 'category-tag-selected' : ''}}"
+            bindtap="onCategorySelect"
+            data-category="seasia"
+          >东南亚菜</view>
+          <view
+            class="category-tag {{category === 'japanese' ? 'category-tag-selected' : ''}}"
+            bindtap="onCategorySelect"
+            data-category="japanese"
+          >日料</view>
+          <view
+            class="category-tag {{category === 'bbq' ? 'category-tag-selected' : ''}}"
+            bindtap="onCategorySelect"
+            data-category="bbq"
+          >烧烤</view>
+          <view
+            class="category-tag {{category === 'hotpot' ? 'category-tag-selected' : ''}}"
+            bindtap="onCategorySelect"
+            data-category="hotpot"
+          >火锅</view>
+          <view
+            class="category-tag {{category === 'local' ? 'category-tag-selected' : ''}}"
+            bindtap="onCategorySelect"
+            data-category="local"
+          >本地菜</view>
+          <view
+            class="category-tag {{category === 'dessert' ? 'category-tag-selected' : ''}}"
+            bindtap="onCategorySelect"
+            data-category="dessert"
+          >甜品蛋糕</view>
+          <view
+            class="category-tag {{category === 'cafe' ? 'category-tag-selected' : ''}}"
+            bindtap="onCategorySelect"
+            data-category="cafe"
+          >奶茶咖啡</view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <view class="section">
+      <view class="section-title-row">
+        <text class="section-title">说两句吧</text>
+        <text class="char-count {{commentRemaining < 20 ? 'char-count-warning' : ''}}">{{commentRemaining}}</text>
+      </view>
+      <textarea
+        class="comment-input"
+        placeholder="分享你的用餐体验..."
+        value="{{comment}}"
+        maxlength="140"
+        bindinput="onCommentInput"
+      />
+    </view>
+
+    <view class="section">
+      <view class="section-title">上传图片（最多3张）</view>
+      <view class="image-grid">
+        <view
+          class="image-add-btn"
+          bindtap="onChooseImage"
+          wx:if="{{images.length < 3}}"
+        >
+          <text class="image-add-icon">+</text>
+        </view>
+        <view
+          class="image-item"
+          wx:for="{{images}}"
+          wx:key="index"
+        >
+          <image class="image-preview" src="{{item}}" mode="aspectFill" />
+          <view class="image-remove" bindtap="onRemoveImage" data-index="{{index}}">✕</view>
+        </view>
+      </view>
+      <view class="uploading-hint" wx:if="{{uploadingImages}}">图片上传中...</view>
+    </view>
+  </view>
+
+  <view class="drawer-footer">
+    <button
+      class="submit-btn {{rating ? 'submit-btn-active' : ''}} {{submitting ? 'submit-btn-loading' : ''}}"
+      bindtap="onSubmit"
+      disabled="{{!rating || submitting}}"
+    >
+      <text wx:if="{{submitting}}">提交中...</text>
+      <text wx:else>{{submitButtonText}}</text>
+    </button>
+  </view>
+</view>

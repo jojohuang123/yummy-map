@@ -18,7 +18,10 @@ Page({
     panelCollapsedHeight: 440,
     panelHeight: 440,
     panelExpandedHeight: 780,
-    nearbyStores: []
+    nearbyStores: [],
+    checkinMap: {},
+    showCheckinDrawer: false,
+    checkinTarget: null
   },
 
   _markerConfig: {
@@ -38,6 +41,14 @@ Page({
       iconPath: "/assets/marker-score-low.png",
       activeIconPath: "/assets/marker-score-low-active.png"
     }
+  },
+
+  _ratingMap: {
+    1: { label: "拉完了", emoji: "😫", color: "#9E9E9E" },
+    2: { label: "NPC", emoji: "😐", color: "#78909C" },
+    3: { label: "人上人", emoji: "😊", color: "#66BB6A" },
+    4: { label: "顶级", emoji: "😍", color: "#FF7043" },
+    5: { label: "夯", emoji: "🤩", color: "#FFCA28" }
   },
 
   _cityNameMap: {
@@ -264,6 +275,55 @@ Page({
     });
 
     this.applyFilter(selectedFavorite || undefined);
+    await this._loadCheckinStatus();
+  },
+
+  async _loadCheckinStatus() {
+    const checkinMap = {};
+    try {
+      const response = await api.getCheckins({ page: 1, limit: 1000 });
+      const checkins = response.data?.list || [];
+      checkins.forEach((checkin) => {
+        if (checkin.poiId) {
+          checkinMap[checkin.poiId] = checkin;
+        }
+      });
+    } catch {
+      // ignore error
+    }
+    this.setData({ checkinMap });
+    this._decorateWithCheckin();
+  },
+
+  _decorateWithCheckin() {
+    const { checkinMap, filteredFavorites } = this.data;
+    const decorated = filteredFavorites.map((item) => {
+      const checkin = checkinMap[item.poiId];
+      if (checkin) {
+        const ratingInfo = this._ratingMap[checkin.rating] || this._ratingMap[1];
+        return Object.assign({}, item, {
+          hasCheckin: true,
+          checkinRating: checkin.rating,
+          checkinLabel: ratingInfo.emoji + ratingInfo.label,
+          checkinColor: ratingInfo.color
+        });
+      }
+      return Object.assign({}, item, {
+        hasCheckin: false,
+        checkinRating: null,
+        checkinLabel: "",
+        checkinColor: ""
+      });
+    });
+
+    const selectedFavorite = this.data.selectedFavorite
+      ? decorated.find((item) => item.id === this.data.selectedFavorite.id)
+      : null;
+
+    this.setData({ filteredFavorites: decorated });
+    if (selectedFavorite) {
+      this.setData({ selectedFavorite });
+    }
   },
 
   applyFilter(selectedFavoriteOverride) {
@@ -490,5 +550,28 @@ Page({
     wx.switchTab({
       url: "/pages/import/index"
     });
+  },
+
+  handleOpenCheckin() {
+    const selectedFavorite = this.data.selectedFavorite;
+    if (!selectedFavorite) return;
+
+    const checkin = this.data.checkinMap[selectedFavorite.poiId];
+    this.setData({
+      showCheckinDrawer: true,
+      checkinTarget: {
+        favorite: selectedFavorite,
+        existingCheckin: checkin || null
+      }
+    });
+  },
+
+  handleCheckinSuccess() {
+    this.setData({ showCheckinDrawer: false, checkinTarget: null });
+    this._loadCheckinStatus();
+  },
+
+  handleCheckinClose() {
+    this.setData({ showCheckinDrawer: false, checkinTarget: null });
   }
 });

@@ -1,6 +1,8 @@
 import { createId } from "../lib/id.js";
 import { AppError } from "../lib/errors.js";
-import { setUpload, getUpload, deleteUpload } from "../lib/db.js";
+import { setUpload, getUpload as dbGetUpload, deleteUpload } from "../lib/db.js";
+
+export { getUpload } from "../lib/db.js";
 
 export const saveUpload = async ({ filename, contentType, buffer }) => {
   if (!buffer || !buffer.length) {
@@ -25,7 +27,7 @@ export const consumeUploads = async (uploadIds) => {
   const results = [];
 
   for (const uploadId of uploadIds || []) {
-    const upload = await getUpload(uploadId);
+    const upload = await dbGetUpload(uploadId);
     if (!upload) {
       throw new AppError(404, "UPLOAD_NOT_FOUND", "上传文件不存在或已失效");
     }

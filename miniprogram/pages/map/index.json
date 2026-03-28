@@ -1,4 +1,7 @@
 {
-  "navigationBarTitleText": "收藏地图"
+  "navigationBarTitleText": "收藏地图",
+  "usingComponents": {
+    "checkin-drawer": "/components/checkin-drawer/index"
+  }
 }
 

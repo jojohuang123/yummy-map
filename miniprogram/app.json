@@ -3,7 +3,8 @@
     "pages/import/index",
     "pages/preview/index",
     "pages/map/index",
-    "pages/list/index"
+    "pages/list/index",
+    "pages/profile/index"
   ],
   "window": {
     "navigationBarTitleText": "美食地图助手",
@@ -30,6 +31,10 @@
       {
         "pagePath": "pages/map/index",
         "text": "地图"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的"
       }
     ]
   },

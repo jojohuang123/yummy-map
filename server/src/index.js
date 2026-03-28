@@ -13,7 +13,16 @@ import {
   updateImportSelections
 } from "./services/import-service.js";
 import { getPaddleOcrStatus, warmupPaddleOcr } from "./services/paddle-ocr-service.js";
-import { saveUpload } from "./services/upload-service.js";
+import { saveUpload, getUpload } from "./services/upload-service.js";
+import {
+  createCheckin,
+  getCheckinList,
+  getCheckinById,
+  getCheckinsForPoi,
+  getCheckinStats,
+  updateCheckinRecord,
+  removeCheckin
+} from "./services/checkin-service.js";
 
 const sendHtml = (response, statusCode, html) => {
   response.writeHead(statusCode, {
@@ -121,6 +130,23 @@ const server = http.createServer(async (request, response) => {
       return;
     }
 
+    if (request.method === "GET" && /^\/api\/uploads\/[^/]+\/raw$/.test(url.pathname)) {
+      const uploadId = url.pathname.split("/")[2];
+      const upload = await getUpload(uploadId);
+      if (!upload) {
+        sendJson(response, 404, { message: "Upload not found" });
+        return;
+      }
+      const buffer = Buffer.from(upload.base64, "base64");
+      response.writeHead(200, {
+        "Content-Type": upload.contentType || "image/jpeg",
+        "Content-Length": buffer.length,
+        "Cache-Control": "public, max-age=31536000"
+      });
+      response.end(buffer);
+      return;
+    }
+
     if (request.method === "GET" && url.pathname.startsWith("/api/imports/")) {
       const importId = url.pathname.split("/").pop();
       sendJson(response, 200, await getImportById(importId));
@@ -168,6 +194,64 @@ const server = http.createServer(async (request, response) => {
     if (request.method === "DELETE" && url.pathname.startsWith("/api/favorites/")) {
       const favoriteId = url.pathname.split("/").pop();
       sendJson(response, 200, await removeFavorite(favoriteId));
+      return;
+    }
+
+    // --- checkin routes ---
+
+    if (request.method === "GET" && url.pathname === "/api/checkins") {
+      const page = parseInt(url.searchParams.get("page") || "1");
+      const limit = parseInt(url.searchParams.get("limit") || "20");
+      const city = url.searchParams.get("city") || undefined;
+      const category = url.searchParams.get("category") || undefined;
+      const result = await getCheckinList({ page, limit, city, category });
+      sendJson(response, 200, { code: 0, data: result });
+      return;
+    }
+
+    if (request.method === "GET" && url.pathname === "/api/checkins/stats") {
+      const stats = await getCheckinStats();
+      sendJson(response, 200, { code: 0, data: stats });
+      return;
+    }
+
+    if (request.method === "GET" && /^\/api\/checkins\/poi\/[^/]+$/.test(url.pathname)) {
+      const poiId = url.pathname.split("/").pop();
+      const checkins = await getCheckinsForPoi(poiId);
+      sendJson(response, 200, { code: 0, data: checkins });
+      return;
+    }
+
+    if (request.method === "POST" && url.pathname === "/api/checkins") {
+      const body = await parseBody(request);
+      const checkin = await createCheckin(body);
+      sendJson(response, 200, { code: 0, data: checkin });
+      return;
+    }
+
+    if (request.method === "GET" && /^\/api\/checkins\/[^/]+$/.test(url.pathname)) {
+      const checkinId = url.pathname.split("/").pop();
+      sendJson(response, 200, { code: 0, data: await getCheckinById(checkinId) });
+      return;
+    }
+
+    if (request.method === "PUT" && /^\/api\/checkins\/[^/]+$/.test(url.pathname)) {
+      const checkinId = url.pathname.split("/").pop();
+      const body = await parseBody(request);
+      sendJson(response, 200, { code: 0, data: await updateCheckinRecord(checkinId, body) });
+      return;
+    }
+
+    if (request.method === "PATCH" && /^\/api\/checkins\/[^/]+$/.test(url.pathname)) {
+      const checkinId = url.pathname.split("/").pop();
+      const body = await parseBody(request);
+      sendJson(response, 200, { code: 0, data: await updateCheckinRecord(checkinId, body) });
+      return;
+    }
+
+    if (request.method === "DELETE" && /^\/api\/checkins\/[^/]+$/.test(url.pathname)) {
+      const checkinId = url.pathname.split("/").pop();
+      sendJson(response, 200, { code: 0, data: await removeCheckin(checkinId) });
       return;
     }
 

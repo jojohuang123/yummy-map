@@ -10,7 +10,8 @@
     "test": "node --env-file=.env test/server.test.js",
     "test:api": "node --env-file=.env test/api.test.js",
     "test:e2e": "node --env-file=.env test/e2e.test.js",
-    "test:all": "node --env-file=.env test/server.test.js && node --env-file=.env test/api.test.js"
+    "test:checkin": "node --env-file=.env test/checkin.test.js",
+    "test:all": "node --env-file=.env test/server.test.js && node --env-file=.env test/api.test.js && node --env-file=.env test/checkin.test.js"
   },
   "dependencies": {
     "sql.js": "^1.14.1",

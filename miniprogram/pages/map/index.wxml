@@ -63,7 +63,10 @@
           <view class="card-header">
             <view class="card-title-group">
               <view class="store-name">{{selectedFavorite.name}}</view>
-              <view class="rating-badge score-badge {{selectedFavorite.ratingClass}}" wx:if="{{selectedFavorite.ratingLabel !== '-'}}">{{selectedFavorite.ratingBadgeText}}</view>
+              <view class="rating-badge score-badge {{selectedFavorite.ratingClass}}" wx:if="{{selectedFavorite.ratingLabel !== '-' && !selectedFavorite.hasCheckin}}">{{selectedFavorite.ratingBadgeText}}</view>
+              <view class="checkin-badge" wx:if="{{selectedFavorite.hasCheckin}}" style="background-color: {{selectedFavorite.checkinColor}}">
+                <text class="checkin-badge-text">{{selectedFavorite.checkinLabel}}</text>
+              </view>
             </view>
           </view>
 
@@ -82,7 +85,12 @@
 
             <view class="card-actions" wx:if="{{!panelExpanded}}">
               <button class="primary-button card-cta" bindtap="handleNavigate">导航到这</button>
+              <button class="secondary-button card-secondary-cta" bindtap="handleOpenCheckin" wx:if="{{!selectedFavorite.hasCheckin}}">打卡</button>
               <view class="text-button remove-link" bindtap="handleRemoveFavorite">从收藏移除</view>
+            </view>
+            <view class="card-actions" wx:if="{{panelExpanded && selectedFavorite.hasCheckin}}">
+              <view class="checkin-recheck-hint">再次打卡可更新记录</view>
+              <button class="text-button" bindtap="handleOpenCheckin">更新打卡</button>
             </view>
           </view>
         </view>
@@ -133,4 +141,12 @@
       <button class="primary-button" bindtap="handleGoImport">去导入美食截图</button>
     </view>
   </block>
+
+  <checkin-drawer
+    wx:if="{{showCheckinDrawer}}"
+    visible="{{showCheckinDrawer}}"
+    target="{{checkinTarget}}"
+    bind:success="handleCheckinSuccess"
+    bind:close="handleCheckinClose"
+  />
 </view>

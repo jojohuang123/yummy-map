@@ -1,0 +1,146 @@
+<view class="page-shell">
+  <view class="profile-header">
+    <view class="profile-avatar">
+      <text class="avatar-icon">👤</text>
+    </view>
+    <view class="profile-title">品鉴师</view>
+  </view>
+
+  <view class="stats-section">
+    <view class="stat-card">
+      <view class="stat-value">{{stats.monthCount}}</view>
+      <view class="stat-label">本月打卡</view>
+      <view class="stat-unit">家</view>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-card">
+      <view class="stat-value">{{stats.totalCount}}</view>
+      <view class="stat-label">累计打卡</view>
+      <view class="stat-unit">家</view>
+    </view>
+  </view>
+
+  <view class="cities-section" wx:if="{{stats.cities.length > 0}}">
+    <view class="section-header">
+      <text class="section-title">🗺️ 打卡足迹</text>
+    </view>
+    <view class="cities-visual">
+      <view class="cities-dots">
+        <view class="city-dot" wx:for="{{cityDots}}" wx:key="index" style="left: {{item.left}}%; top: {{item.top}}%"></view>
+      </view>
+    </view>
+    <view class="cities-tags">
+      <view
+        class="city-tag {{selectedCity === item.name ? 'city-tag-selected' : ''}}"
+        wx:for="{{cityList}}"
+        wx:key="value"
+        bindtap="onCitySelect"
+        data-city="{{item.value}}"
+      >
+        {{item.name}} <text class="city-count" wx:if="{{item.cityCount > 0}}">{{item.cityCount}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="checkins-section">
+    <view class="section-header">
+      <text class="section-title">📋 已打卡店铺</text>
+      <view class="filter-btn" bindtap="onToggleFilterSheet">筛选</view>
+    </view>
+
+    <view class="filter-tags" wx:if="{{selectedCity || selectedCategory}}">
+      <view class="filter-tag" wx:if="{{selectedCity}}" bindtap="onCitySelect" data-city="">
+        城市: {{selectedCity}} ✕
+      </view>
+      <view class="filter-tag" wx:if="{{selectedCategory}}" bindtap="onCategorySelect" data-category="">
+        分类: {{selectedCategoryLabel}} ✕
+      </view>
+    </view>
+
+    <view class="checkin-list" wx:if="{{!loading && filteredCheckins.length > 0}}">
+      <view
+        class="checkin-card"
+        wx:for="{{filteredCheckins}}"
+        wx:key="id"
+        bindtap="onCheckinTap"
+        data-index="{{index}}"
+      >
+        <view class="checkin-header">
+          <view class="checkin-name">{{item.shopName}}</view>
+          <view class="checkin-rating" style="background-color: {{item.ratingColor}}">
+            {{item.ratingEmoji}} {{item.ratingLabel}}
+          </view>
+        </view>
+        <view class="checkin-meta">
+          <text class="checkin-location" wx:if="{{item.city}}">{{item.city}}</text>
+          <text class="checkin-divider" wx:if="{{item.city && item.categoryLabel}}">·</text>
+          <text class="checkin-category" wx-if="{{item.categoryLabel}}">{{item.categoryLabel}}</text>
+        </view>
+        <view class="checkin-comment" wx:if="{{item.comment}}">{{item.comment}}</view>
+        <view class="checkin-images" wx:if="{{item.images && item.images.length > 0}}">
+          <image
+            class="checkin-image"
+            wx:for="{{item.images}}"
+            wx:for-item="img"
+            wx:key="index"
+            src="{{img}}"
+            mode="aspectFill"
+          />
+        </view>
+        <view class="checkin-footer">
+          <text class="checkin-date">{{item.formattedDate}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:if="{{!loading && filteredCheckins.length === 0}}">
+      <view class="empty-icon">🍽️</view>
+      <view class="empty-title">还没有打卡记录</view>
+      <view class="empty-desc">去地图页发现美食，打卡记录你的品鉴之旅吧！</view>
+      <button class="empty-btn" bindtap="onGoToMap">去地图页看看</button>
+    </view>
+
+    <view class="loading-state" wx:if="{{loading}}">
+      <text>加载中...</text>
+    </view>
+  </view>
+
+  <view class="filter-sheet-mask {{showFilterSheet ? 'filter-sheet-mask-visible' : ''}}" bindtap="onCloseFilterSheet"></view>
+
+  <view class="filter-sheet {{showFilterSheet ? 'filter-sheet-visible' : ''}}">
+    <view class="filter-sheet-header">
+      <text class="filter-sheet-title">筛选</text>
+      <view class="filter-sheet-close" bindtap="onCloseFilterSheet">✕</view>
+    </view>
+
+    <view class="filter-section">
+      <view class="filter-section-title">城市</view>
+      <view class="filter-tags-grid">
+        <view
+          class="filter-tag-btn {{selectedCity === item.value ? 'filter-tag-btn-selected' : ''}}"
+          wx:for="{{cityList}}"
+          wx:key="value"
+          bindtap="onCitySelect"
+          data-city="{{item.value}}"
+        >
+          {{item.name}}
+        </view>
+      </view>
+    </view>
+
+    <view class="filter-section">
+      <view class="filter-section-title">分类</view>
+      <view class="filter-tags-grid">
+        <view
+          class="filter-tag-btn {{selectedCategory === item.value ? 'filter-tag-btn-selected' : ''}}"
+          wx:for="{{categoryList}}"
+          wx:key="value"
+          bindtap="onCategorySelect"
+          data-category="{{item.value}}"
+        >
+          {{item.name}}
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

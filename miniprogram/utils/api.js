@@ -90,6 +90,43 @@ const api = {
       url: "/api/favorites/batch-delete",
       method: "POST",
       data: { favoriteIds }
+    }),
+
+  // Checkin APIs
+  getCheckins: ({ page = 1, limit = 20, city, category } = {}) =>
+    request({
+      url: "/api/checkins",
+      method: "GET",
+      data: { page, limit, city, category }
+    }),
+  getCheckinsStats: () =>
+    request({
+      url: "/api/checkins/stats",
+      method: "GET"
+    }),
+  getCheckinsByPoi: (poiId) =>
+    request({
+      url: `/api/checkins/poi/${poiId}`,
+      method: "GET"
+    }),
+  createCheckin: (payload) =>
+    request({
+      url: "/api/checkins",
+      method: "POST",
+      data: payload,
+      timeout: 30000
+    }),
+  updateCheckin: (checkinId, payload) =>
+    request({
+      url: `/api/checkins/${checkinId}`,
+      method: "PATCH",
+      data: payload,
+      timeout: 30000
+    }),
+  deleteCheckin: (checkinId) =>
+    request({
+      url: `/api/checkins/${checkinId}`,
+      method: "DELETE"
     })
 };
 

@@ -185,6 +185,9 @@
 .card-title-group {
   width: 100%;
   align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
 }
 
 .store-name {
@@ -459,4 +462,50 @@
   line-height: 1.6;
   color: var(--text-secondary);
   margin-bottom: 30rpx;
+}
+
+.checkin-badge {
+  flex-shrink: 0;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52rpx;
+  padding: 0 16rpx;
+  font-size: 24rpx;
+  font-weight: 700;
+  line-height: 1;
+  border-radius: var(--radius-pill);
+}
+
+.checkin-badge-text {
+  color: #fff;
+  font-size: 24rpx;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.card-secondary-cta {
+  flex: 0 0 auto;
+  margin: 0;
+  background: linear-gradient(135deg, #FFCA28, #FFB300);
+  color: #fff;
+  font-size: 26rpx;
+  font-weight: 700;
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 0 28rpx;
+  min-height: 76rpx;
+  line-height: 76rpx;
+  box-shadow: 0 4rpx 12rpx rgba(255, 202, 40, 0.35);
+}
+
+.card-secondary-cta::after {
+  border: none;
+}
+
+.checkin-recheck-hint {
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+  line-height: 1.2;
 }
