@@ -131,7 +131,7 @@ const server = http.createServer(async (request, response) => {
     }
 
     if (request.method === "GET" && /^\/api\/uploads\/[^/]+\/raw$/.test(url.pathname)) {
-      const uploadId = url.pathname.split("/")[2];
+      const uploadId = url.pathname.split("/")[3];
       const upload = await getUpload(uploadId);
       if (!upload) {
         sendJson(response, 404, { message: "Upload not found" });
@@ -202,8 +202,10 @@ const server = http.createServer(async (request, response) => {
     if (request.method === "GET" && url.pathname === "/api/checkins") {
       const page = parseInt(url.searchParams.get("page") || "1");
       const limit = parseInt(url.searchParams.get("limit") || "20");
-      const city = url.searchParams.get("city") || undefined;
-      const category = url.searchParams.get("category") || undefined;
+      const rawCity = url.searchParams.get("city");
+      const rawCategory = url.searchParams.get("category");
+      const city = rawCity && rawCity !== "undefined" ? rawCity : undefined;
+      const category = rawCategory && rawCategory !== "undefined" ? rawCategory : undefined;
       const result = await getCheckinList({ page, limit, city, category });
       sendJson(response, 200, { code: 0, data: result });
       return;

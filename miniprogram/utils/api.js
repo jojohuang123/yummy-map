@@ -93,12 +93,16 @@ const api = {
     }),
 
   // Checkin APIs
-  getCheckins: ({ page = 1, limit = 20, city, category } = {}) =>
-    request({
+  getCheckins: ({ page = 1, limit = 20, city, category } = {}) => {
+    const data = { page, limit };
+    if (city) data.city = city;
+    if (category) data.category = category;
+    return request({
       url: "/api/checkins",
       method: "GET",
-      data: { page, limit, city, category }
-    }),
+      data
+    });
+  },
   getCheckinsStats: () =>
     request({
       url: "/api/checkins/stats",
